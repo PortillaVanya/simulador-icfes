@@ -1,53 +1,30 @@
+const { Repaso, Pregunta, Area } = require("../models");
+
 class RepasoRepository {
 
-    constructor(db) {
-        this.db = db;
-    }
-
     async agregar(repaso) {
-        const sql = `
-            INSERT INTO repaso (id_pregunta, id_usuario, prioridad)
-            VALUES (?, ?, ?)
-        `;
-
-        const resultado = await this.db.ejecutar(sql, [
-            repaso.id_pregunta,
-            repaso.id_usuario,
-            repaso.prioridad
-        ]);
-
-        return { id_repaso: resultado.insertId, ...repaso };
+        return await Repaso.create({
+            id_pregunta: repaso.id_pregunta,
+            id_usuario: repaso.id_usuario,
+            prioridad: repaso.prioridad
+        });
     }
 
     async obtenerPorUsuario(id_usuario) {
-        const sql = `
-            SELECT
-                r.id_repaso,
-                r.fecha_agregado,
-                r.prioridad,
-                p.id_pregunta,
-                p.enunciado,
-                p.nivel_dificultad,
-                a.nombre_area
-            FROM repaso r
-            INNER JOIN preguntas p ON r.id_pregunta = p.id_pregunta
-            INNER JOIN areas a ON p.id_area = a.id_area
-            WHERE r.id_usuario = ?
-            ORDER BY r.fecha_agregado DESC
-        `;
-
-        return await this.db.ejecutar(sql, [id_usuario]);
+        return await Repaso.findAll({
+            where: { id_usuario },
+            include: [{
+                model: Pregunta,
+                attributes: ["enunciado", "nivel_dificultad"],
+                include: [{ model: Area, attributes: ["nombre_area"] }]
+            }],
+            order: [["fecha_agregado", "DESC"]]
+        });
     }
 
     async eliminar(id_repaso) {
-        const sql = `
-            DELETE FROM repaso
-            WHERE id_repaso = ?
-        `;
-
-        const resultado = await this.db.ejecutar(sql, [id_repaso]);
-
-        return resultado.affectedRows > 0;
+        const filasEliminadas = await Repaso.destroy({ where: { id_repaso } });
+        return filasEliminadas > 0;
     }
 
 }

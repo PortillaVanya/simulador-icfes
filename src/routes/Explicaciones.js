@@ -4,11 +4,10 @@ const ExplicacionRepository = require("../repositories/ExplicacionRepository");
 const ExplicacionService = require("../services/ExplicacionService");
 const ExplicacionController = require("../controllers/ExplicacionController");
 
-module.exports = (db) => {
-
+module.exports = () => {
     const router = express.Router();
 
-    const explicacionRepository = new ExplicacionRepository(db);
+    const explicacionRepository = new ExplicacionRepository();
     const explicacionService = new ExplicacionService(explicacionRepository);
     const explicacionController = new ExplicacionController(explicacionService);
 
@@ -17,5 +16,4 @@ module.exports = (db) => {
     router.put("/:id", explicacionController.actualizar);
 
     return router;
-
 };

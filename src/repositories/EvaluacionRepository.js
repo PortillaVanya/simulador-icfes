@@ -1,201 +1,86 @@
+const { Evaluacion, DetalleEvaluacion, Pregunta, Area, sequelize } = require("../models");
+
 class EvaluacionRepository {
 
-    constructor(db) {
-        this.db = db;
-    }
-
-    // ============================
-    // EVALUACION
-    // ============================
-
     async crear(evaluacion) {
-        const sql = `
-            INSERT INTO evaluacion (id_usuario, id_area, total_preguntas)
-            VALUES (?, ?, ?)
-        `;
+        const nueva = await Evaluacion.create({
+            id_usuario: evaluacion.id_usuario,
+            id_area: evaluacion.id_area,
+            total_preguntas: evaluacion.total_preguntas
+        });
 
-        const resultado = await this.db.ejecutar(sql, [
-            evaluacion.id_usuario,
-            evaluacion.id_area,
-            evaluacion.total_preguntas
-        ]);
-
-        return await this.obtenerPorId(resultado.insertId);
+        return await this.obtenerPorId(nueva.id_evaluacion);
     }
 
     async obtenerPorId(id_evaluacion) {
-        const sql = `
-            SELECT *
-            FROM evaluacion
-            WHERE id_evaluacion = ?
-        `;
-
-        const resultados = await this.db.ejecutar(sql, [id_evaluacion]);
-
-        return resultados.length > 0 ? resultados[0] : null;
+        return await Evaluacion.findByPk(id_evaluacion);
     }
 
     async obtenerHistorialPorUsuario(id_usuario) {
-        const sql = `
-            SELECT e.*, a.nombre_area
-            FROM evaluacion e
-            INNER JOIN areas a ON e.id_area = a.id_area
-            WHERE e.id_usuario = ?
-            ORDER BY e.fecha DESC
-        `;
-
-        return await this.db.ejecutar(sql, [id_usuario]);
+        return await Evaluacion.findAll({
+            where: { id_usuario },
+            include: [{ model: Area, attributes: ["nombre_area"] }],
+            order: [["fecha", "DESC"]]
+        });
     }
 
     async actualizarPuntaje(id_evaluacion, puntaje_obtenido) {
-        const sql = `
-            UPDATE evaluacion
-            SET puntaje_obtenido = ?
-            WHERE id_evaluacion = ?
-        `;
+        const [filasActualizadas] = await Evaluacion.update(
+            { puntaje_obtenido },
+            { where: { id_evaluacion } }
+        );
 
-        const resultado = await this.db.ejecutar(sql, [
-            puntaje_obtenido,
-            id_evaluacion
-        ]);
-
-        if (resultado.affectedRows === 0) {
-            return null;
-        }
+        if (filasActualizadas === 0) return null;
 
         return await this.obtenerPorId(id_evaluacion);
     }
 
-    // ============================
-    // DETALLE_EVALUACION
-    // ============================
+    // ---- detalle_evaluacion ----
 
     async registrarRespuesta(detalle) {
-        const sql = `
-            INSERT INTO detalle_evaluacion (
-                id_pregunta,
-                id_evaluacion,
-                tiempo_usado,
-                respuesta_marcada,
-                es_correcta
-            )
-            VALUES (?, ?, ?, ?, ?)
-        `;
-
-        const resultado = await this.db.ejecutar(sql, [
-            detalle.id_pregunta,
-            detalle.id_evaluacion,
-            detalle.tiempo_usado,
-            detalle.respuesta_marcada,
-            detalle.es_correcta
-        ]);
-
-        return {
-            id_detalle: resultado.insertId,
-            ...detalle
-        };
+        return await DetalleEvaluacion.create({
+            id_evaluacion: detalle.id_evaluacion,
+            id_pregunta: detalle.id_pregunta,
+            respuesta_marcada: detalle.respuesta_marcada,
+            es_correcta: detalle.es_correcta,
+            tiempo_usado: detalle.tiempo_usado || null
+        });
     }
 
     async obtenerDetallePorEvaluacion(id_evaluacion) {
-        const sql = `
-            SELECT
-                d.id_detalle,
-                d.id_pregunta,
-                d.tiempo_usado,
-                d.respuesta_marcada,
-                d.es_correcta,
-                p.enunciado,
-                p.respuesta_correcta
-            FROM detalle_evaluacion d
-            INNER JOIN preguntas p
-                ON d.id_pregunta = p.id_pregunta
-            WHERE d.id_evaluacion = ?
-        `;
-
-        return await this.db.ejecutar(sql, [id_evaluacion]);
+        return await DetalleEvaluacion.findAll({
+            where: { id_evaluacion },
+            include: [{
+                model: Pregunta,
+                attributes: ["enunciado", "respuesta_correcta"]
+            }]
+        });
     }
 
     async contarRespuestasRegistradas(id_evaluacion) {
-        const sql = `
-            SELECT COUNT(*) AS total
-            FROM detalle_evaluacion
-            WHERE id_evaluacion = ?
-        `;
-
-        const resultados = await this.db.ejecutar(sql, [id_evaluacion]);
-
-        return resultados[0].total;
+        return await DetalleEvaluacion.count({ where: { id_evaluacion } });
     }
 
     async contarRespuestasCorrectas(id_evaluacion) {
-        const sql = `
-            SELECT COUNT(*) AS total_correctas
-            FROM detalle_evaluacion
-            WHERE id_evaluacion = ?
-              AND es_correcta = 1
-        `;
-
-        const resultados = await this.db.ejecutar(sql, [id_evaluacion]);
-
-        return resultados[0].total_correctas;
+        return await DetalleEvaluacion.count({
+            where: { id_evaluacion, es_correcta: 1 }
+        });
     }
 
     async yaRespondioPregunta(id_evaluacion, id_pregunta) {
-        const sql = `
-            SELECT id_detalle
-            FROM detalle_evaluacion
-            WHERE id_evaluacion = ?
-              AND id_pregunta = ?
-        `;
+        const existente = await DetalleEvaluacion.findOne({
+            where: { id_evaluacion, id_pregunta }
+        });
 
-        const resultados = await this.db.ejecutar(sql, [
-            id_evaluacion,
-            id_pregunta
-        ]);
-
-        return resultados.length > 0;
+        return existente !== null;
     }
-
-    // ============================
-    // PREGUNTAS
-    // ============================
 
     async obtenerRespuestaCorrecta(id_pregunta) {
-        const sql = `
-            SELECT respuesta_correcta
-            FROM preguntas
-            WHERE id_pregunta = ?
-        `;
+        const pregunta = await Pregunta.findByPk(id_pregunta, {
+            attributes: ["respuesta_correcta"]
+        });
 
-        const resultados = await this.db.ejecutar(sql, [id_pregunta]);
-
-        return resultados.length > 0
-            ? resultados[0].respuesta_correcta
-            : null;
-    }
-
-    // ============================
-    // RANKING
-    // ============================
-
-    async obtenerRankingPorArea(id_area) {
-        const sql = `
-            SELECT
-                id_ranking,
-                id_usuario,
-                nombre_usuario,
-                id_area,
-                nombre_area,
-                mejor_puntaje,
-                total_intentos,
-                ultima_actuacion
-            FROM vista_ranking_general
-            WHERE id_area = ?
-            ORDER BY mejor_puntaje DESC, total_intentos ASC
-            LIMIT 10
-        `;
-
-        return await this.db.ejecutar(sql, [id_area]);
+        return pregunta ? pregunta.respuesta_correcta : null;
     }
 
 }

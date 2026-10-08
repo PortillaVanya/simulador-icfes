@@ -9,43 +9,11 @@ class UsuarioService {
     async obtenerTodos() {
         return await this.usuarioRepository.obtenerTodos();
     }
-    
-    async login(correo, password) {
-    if (!correo || correo.trim() === "") {
-        throw new Error("El correo es obligatorio");
-    }
-
-    if (!password || password.trim() === "") {
-        throw new Error("La contraseña es obligatoria");
-    }
-
-    const usuario = await this.usuarioRepository.obtenerPorCorreo(
-        correo.trim()
-    );
-
-    if (!usuario) {
-        throw new Error("Correo o contraseña incorrectos");
-    }
-
-    const passwordCorrecta = await bcrypt.compare(
-        password,
-        usuario.password
-    );
-
-    if (!passwordCorrecta) {
-        throw new Error("Correo o contraseña incorrectos");
-    }
-
-    const { password: _, ...usuarioSinPassword } = usuario;
-
-    return usuarioSinPassword;
-}
 
     async obtenerPorId(id_usuario) {
         if (!id_usuario || isNaN(id_usuario)) {
             throw new Error("El ID del usuario no es válido");
         }
-
         return await this.usuarioRepository.obtenerPorId(id_usuario);
     }
 
@@ -55,16 +23,13 @@ class UsuarioService {
         if (!nombre || nombre.trim() === "") {
             throw new Error("El nombre es obligatorio");
         }
-
         if (!correo || correo.trim() === "") {
             throw new Error("El correo es obligatorio");
         }
-
         const correoValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
         if (!correoValido) {
             throw new Error("El correo no tiene un formato válido");
         }
-
         if (!password || password.length < 6) {
             throw new Error("La contraseña debe tener al menos 6 caracteres");
         }
@@ -74,14 +39,30 @@ class UsuarioService {
             throw new Error("Ya existe un usuario registrado con ese correo");
         }
 
-       const passwordEncriptada = await bcrypt.hash(password, 10);
+        const passwordEncriptado = await bcrypt.hash(password, 10);
 
-      return await this.usuarioRepository.crear({
-      nombre: nombre.trim(),
-      correo: correo.trim(),
-      password: passwordEncriptada,
-      id_rol: id_rol || 2
-    });
+        return await this.usuarioRepository.crear({
+            nombre: nombre.trim(),
+            correo: correo.trim(),
+            password: passwordEncriptado,
+            id_rol: id_rol || 2
+        });
+    }
+
+    async login(correo, password) {
+        const usuario = await this.usuarioRepository.obtenerPorCorreo(correo);
+        if (!usuario) {
+            throw new Error("Credenciales inválidas");
+        }
+
+        const passwordValido = await bcrypt.compare(password, usuario.password);
+        if (!passwordValido) {
+            throw new Error("Credenciales inválidas");
+        }
+
+        const usuarioSinPassword = usuario.toJSON();
+        delete usuarioSinPassword.password;
+        return usuarioSinPassword;
     }
 
     async actualizar(id_usuario, usuario) {
@@ -90,16 +71,12 @@ class UsuarioService {
         }
 
         const usuarioExistente = await this.usuarioRepository.obtenerPorId(id_usuario);
-        if (!usuarioExistente) {
-            return null;
-        }
+        if (!usuarioExistente) return null;
 
         const { nombre, correo, id_rol } = usuario;
-
         if (!nombre || nombre.trim() === "") {
             throw new Error("El nombre es obligatorio");
         }
-
         if (!correo || correo.trim() === "") {
             throw new Error("El correo es obligatorio");
         }
@@ -115,11 +92,8 @@ class UsuarioService {
         if (!id_usuario || isNaN(id_usuario)) {
             throw new Error("El ID del usuario no es válido");
         }
-
         const usuarioExistente = await this.usuarioRepository.obtenerPorId(id_usuario);
-        if (!usuarioExistente) {
-            return false;
-        }
+        if (!usuarioExistente) return false;
 
         return await this.usuarioRepository.eliminar(id_usuario);
     }

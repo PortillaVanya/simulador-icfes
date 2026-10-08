@@ -4,11 +4,10 @@ const RepasoRepository = require("../repositories/RepasoRepository");
 const RepasoService = require("../services/RepasoService");
 const RepasoController = require("../controllers/RepasoController");
 
-module.exports = (db) => {
-
+module.exports = () => {
     const router = express.Router();
 
-    const repasoRepository = new RepasoRepository(db);
+    const repasoRepository = new RepasoRepository();
     const repasoService = new RepasoService(repasoRepository);
     const repasoController = new RepasoController(repasoService);
 
@@ -17,5 +16,4 @@ module.exports = (db) => {
     router.delete("/:id", repasoController.eliminar);
 
     return router;
-
 };

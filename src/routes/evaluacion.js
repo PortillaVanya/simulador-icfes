@@ -1,65 +1,19 @@
 const express = require("express");
 
-const EvaluacionRepository = require("../repositories/EvaluacionRepository");
-const EvaluacionService = require("../services/EvaluacionService");
-const EvaluacionController = require("../controllers/EvaluacionController");
+const ExplicacionRepository = require("../repositories/ExplicacionRepository");
+const ExplicacionService = require("../services/ExplicacionService");
+const ExplicacionController = require("../controllers/ExplicacionController");
 
-module.exports = (db) => {
-
+module.exports = () => {
     const router = express.Router();
 
-    const evaluacionRepository = new EvaluacionRepository(db);
-    const evaluacionService = new EvaluacionService(evaluacionRepository);
-    const evaluacionController = new EvaluacionController(evaluacionService);
+    const explicacionRepository = new ExplicacionRepository();
+    const explicacionService = new ExplicacionService(explicacionRepository);
+    const explicacionController = new ExplicacionController(explicacionService);
 
-    // ============================
-    // EVALUACION
-    // ============================
-
-    // Iniciar una evaluación
-    router.post(
-        "/",
-        evaluacionController.iniciar
-    );
-
-    // Historial de evaluaciones de un usuario
-    router.get(
-        "/usuario/:idUsuario",
-        evaluacionController.obtenerHistorial
-    );
-
-    // ============================
-    // RANKING
-    // ============================
-
-    // Top 10 de usuarios por área
-    router.get(
-        "/ranking/area/:idArea",
-        evaluacionController.obtenerRankingPorArea
-    );
-
-    // ============================
-    // EVALUACION POR ID
-    // ============================
-
-    // Obtener evaluación por ID
-    router.get(
-        "/:id",
-        evaluacionController.obtenerPorId
-    );
-
-    // Registrar respuesta
-    router.post(
-        "/:id/respuestas",
-        evaluacionController.registrarRespuesta
-    );
-
-    // Finalizar evaluación
-    router.put(
-        "/:id/finalizar",
-        evaluacionController.finalizar
-    );
+    router.post("/", explicacionController.crear);
+    router.get("/:id", explicacionController.obtenerPorId);
+    router.put("/:id", explicacionController.actualizar);
 
     return router;
-
 };

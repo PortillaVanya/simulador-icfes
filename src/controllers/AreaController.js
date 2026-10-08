@@ -3,7 +3,17 @@ class AreaController {
     constructor(areaService) {
         this.areaService = areaService;
     }
-
+obtenerEstadisticas = async (req, res) => {
+    try {
+        const stats = await this.areaService.obtenerEstadisticas(req.params.id);
+        if (!stats) {
+            return res.status(404).json({ success: false, message: "Área no encontrada." });
+        }
+        return res.status(200).json({ success: true, data: stats });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Error interno del servidor." });
+    }
+};
     obtenerTodas = async (req, res) => {
         try {
             const areas = await this.areaService.obtenerTodas();

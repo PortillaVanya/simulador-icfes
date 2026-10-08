@@ -1,87 +1,61 @@
+const { Area, Pregunta, Evaluacion, sequelize } = require("../models");
+
 class AreaRepository {
 
-    constructor(db) {
-        this.db = db;
-    }
-
     async obtenerTodas() {
-        const sql = `
-            SELECT id_area, nombre_area, descripcion
-            FROM areas
-            ORDER BY id_area
-        `;
-
-        return await this.db.ejecutar(sql);
+        return await Area.findAll({ order: [["id_area", "ASC"]] });
     }
 
     async obtenerPorId(id_area) {
-        const sql = `
-            SELECT id_area, nombre_area, descripcion
-            FROM areas
-            WHERE id_area = ?
-        `;
-
-        const resultados = await this.db.ejecutar(sql, [id_area]);
-
-        return resultados.length > 0 ? resultados[0] : null;
+        return await Area.findByPk(id_area);
     }
 
     async obtenerPorNombre(nombre_area) {
-        const sql = `
-            SELECT id_area, nombre_area, descripcion
-            FROM areas
-            WHERE nombre_area = ?
-        `;
-
-        const resultados = await this.db.ejecutar(sql, [nombre_area]);
-
-        return resultados.length > 0 ? resultados[0] : null;
+        return await Area.findOne({ where: { nombre_area } });
     }
 
     async crear(area) {
-        // id_area es AUTO_INCREMENT, no se envía manualmente
-        const sql = `
-            INSERT INTO areas (nombre_area, descripcion)
-            VALUES (?, ?)
-        `;
-
-        const resultado = await this.db.ejecutar(sql, [
-            area.nombre_area,
-            area.descripcion
-        ]);
-
-        return await this.obtenerPorId(resultado.insertId);
+        return await Area.create({
+            nombre_area: area.nombre_area,
+            descripcion: area.descripcion
+        });
     }
 
     async actualizar(id_area, area) {
-        const sql = `
-            UPDATE areas
-            SET nombre_area = ?, descripcion = ?
-            WHERE id_area = ?
-        `;
+        const [filasActualizadas] = await Area.update(
+            { nombre_area: area.nombre_area, descripcion: area.descripcion },
+            { where: { id_area } }
+        );
 
-        const resultado = await this.db.ejecutar(sql, [
-            area.nombre_area,
-            area.descripcion,
-            id_area
-        ]);
-
-        if (resultado.affectedRows === 0) {
-            return null;
-        }
+        if (filasActualizadas === 0) return null;
 
         return await this.obtenerPorId(id_area);
     }
 
     async eliminar(id_area) {
-        const sql = `
-            DELETE FROM areas
-            WHERE id_area = ?
-        `;
+        const filasEliminadas = await Area.destroy({ where: { id_area } });
+        return filasEliminadas > 0;
+    }
 
-        const resultado = await this.db.ejecutar(sql, [id_area]);
+    async obtenerEstadisticas(id_area) {
+        const total_preguntas = await Pregunta.count({ where: { id_area } });
+        const total_evaluaciones = await Evaluacion.count({ where: { id_area } });
 
-        return resultado.affectedRows > 0;
+        const promedio = await Evaluacion.findOne({
+            where: { id_area },
+            attributes: [
+                [sequelize.fn("AVG", sequelize.col("puntaje_obtenido")), "promedio_puntaje"]
+            ],
+            raw: true
+        });
+
+        return {
+            total_preguntas,
+            total_evaluaciones,
+            promedio_puntaje: promedio.promedio_puntaje
+                ? Number(Number(promedio.promedio_puntaje).toFixed(2))
+                : 0
+        };
     }
 
 }

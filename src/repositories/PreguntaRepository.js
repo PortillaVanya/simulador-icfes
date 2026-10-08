@@ -1,287 +1,73 @@
+const { Pregunta, Area, Contexto, Explicacion, sequelize } = require("../models");
+
+const INCLUDES_COMPLETOS = [
+    { model: Area, attributes: ["nombre_area"] },
+    { model: Contexto, attributes: ["titulo", "contenido"] },
+    { model: Explicacion, attributes: ["texto_explicacion", "imagen_url"] }
+];
+
 class PreguntaRepository {
 
-
-constructor(db) {
-    this.db = db;
-}
-
-
-async obtenerTodos() {
-
-    const sql = `
-        SELECT
-            p.id_pregunta,
-            p.id_area,
-            a.nombre_area,
-
-            p.id_contexto,
-            c.titulo AS titulo_contexto,
-            c.contenido AS contenido_contexto,
-            c.url_imagen AS imagen_contexto,
-
-            p.enunciado,
-
-            p.opcion_a,
-            p.opcion_b,
-            p.opcion_c,
-            p.opcion_d,
-
-            p.respuesta_correcta,
-            p.nivel_dificultad,
-
-            p.id_explicacion,
-            e.texto_explicacion,
-            e.imagen_url AS imagen_explicacion,
-
-            p.url_imagen
-
-        FROM preguntas p
-
-        INNER JOIN areas a
-            ON p.id_area = a.id_area
-
-        LEFT JOIN contextos c
-            ON p.id_contexto = c.id_contexto
-
-        LEFT JOIN explicaciones e
-            ON p.id_explicacion = e.id_explicacion
-
-        ORDER BY p.id_pregunta DESC
-    `;
-
-    return await this.db.ejecutar(sql);
-}
-
-
-async obtenerPorId(id) {
-
-    const sql = `
-        SELECT
-            p.id_pregunta,
-            p.id_area,
-            a.nombre_area,
-
-            p.id_contexto,
-            c.titulo AS titulo_contexto,
-            c.contenido AS contenido_contexto,
-            c.url_imagen AS imagen_contexto,
-
-            p.enunciado,
-
-            p.opcion_a,
-            p.opcion_b,
-            p.opcion_c,
-            p.opcion_d,
-
-            p.respuesta_correcta,
-            p.nivel_dificultad,
-
-            p.id_explicacion,
-            e.texto_explicacion,
-            e.imagen_url AS imagen_explicacion,
-
-            p.url_imagen
-
-        FROM preguntas p
-
-        INNER JOIN areas a
-            ON p.id_area = a.id_area
-
-        LEFT JOIN contextos c
-            ON p.id_contexto = c.id_contexto
-
-        LEFT JOIN explicaciones e
-            ON p.id_explicacion = e.id_explicacion
-
-        WHERE p.id_pregunta = ?
-    `;
-
-    const resultados =
-        await this.db.ejecutar(sql, [id]);
-
-    return resultados.length > 0
-        ? resultados[0]
-        : null;
-}
-
-
-async obtenerPorArea(idArea) {
-
-    const sql = `
-        SELECT
-            p.id_pregunta,
-            p.id_area,
-            a.nombre_area,
-
-            p.id_contexto,
-            c.titulo AS titulo_contexto,
-            c.contenido AS contenido_contexto,
-            c.url_imagen AS imagen_contexto,
-
-            p.enunciado,
-
-            p.opcion_a,
-            p.opcion_b,
-            p.opcion_c,
-            p.opcion_d,
-
-            p.respuesta_correcta,
-            p.nivel_dificultad,
-
-            p.id_explicacion,
-            e.texto_explicacion,
-            e.imagen_url AS imagen_explicacion,
-
-            p.url_imagen
-
-        FROM preguntas p
-
-        INNER JOIN areas a
-            ON p.id_area = a.id_area
-
-        LEFT JOIN contextos c
-            ON p.id_contexto = c.id_contexto
-
-        LEFT JOIN explicaciones e
-            ON p.id_explicacion = e.id_explicacion
-
-        WHERE p.id_area = ?
-
-        ORDER BY p.id_pregunta DESC
-    `;
-
-    return await this.db.ejecutar(sql, [idArea]);
-}
-
-
-async crear(pregunta) {
-
-    const sql = `
-        INSERT INTO preguntas (
-            id_area,
-            id_contexto,
-            enunciado,
-            opcion_a,
-            opcion_b,
-            opcion_c,
-            opcion_d,
-            respuesta_correcta,
-            nivel_dificultad,
-            id_explicacion,
-            url_imagen
-        )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
-
-    const parametros = [
-        pregunta.id_area,
-        pregunta.id_contexto,
-        pregunta.enunciado,
-        pregunta.opcion_a,
-        pregunta.opcion_b,
-        pregunta.opcion_c,
-        pregunta.opcion_d,
-        pregunta.respuesta_correcta,
-        pregunta.nivel_dificultad,
-        pregunta.id_explicacion,
-        pregunta.url_imagen
-    ];
-
-    const resultado =
-        await this.db.ejecutar(sql, parametros);
-
-    return {
-        id_pregunta: resultado.insertId,
-        ...pregunta
-    };
-}
-
-
-async actualizar(id, pregunta) {
-
-    const sql = `
-        UPDATE preguntas
-        SET
-            id_area = ?,
-            id_contexto = ?,
-            enunciado = ?,
-            opcion_a = ?,
-            opcion_b = ?,
-            opcion_c = ?,
-            opcion_d = ?,
-            respuesta_correcta = ?,
-            nivel_dificultad = ?,
-            id_explicacion = ?,
-            url_imagen = ?
-        WHERE id_pregunta = ?
-    `;
-
-    const parametros = [
-        pregunta.id_area,
-        pregunta.id_contexto,
-        pregunta.enunciado,
-        pregunta.opcion_a,
-        pregunta.opcion_b,
-        pregunta.opcion_c,
-        pregunta.opcion_d,
-        pregunta.respuesta_correcta,
-        pregunta.nivel_dificultad,
-        pregunta.id_explicacion,
-        pregunta.url_imagen,
-        id
-    ];
-
-    const resultado =
-        await this.db.ejecutar(sql, parametros);
-
-    if (resultado.affectedRows === 0) {
-        return null;
+    async obtenerAleatoriasPorArea(idArea, cantidad) {
+        // OJO: a propósito NO incluye respuesta_correcta.
+        // Es para que el estudiante reciba el simulacro, no la respuesta.
+        return await Pregunta.findAll({
+            where: { id_area: idArea },
+            attributes: [
+                "id_pregunta", "id_area", "id_contexto", "enunciado",
+                "opcion_a", "opcion_b", "opcion_c", "opcion_d",
+                "nivel_dificultad", "url_imagen"
+            ],
+            order: sequelize.random(),
+            limit: cantidad
+        });
     }
 
-    return {
-        id_pregunta: Number(id),
-        ...pregunta
-    };
-}
+    async crear(pregunta) {
+        return await Pregunta.create({
+            id_area: pregunta.id_area,
+            id_contexto: pregunta.id_contexto || null,
+            enunciado: pregunta.enunciado,
+            opcion_a: pregunta.opcion_a,
+            opcion_b: pregunta.opcion_b,
+            opcion_c: pregunta.opcion_c,
+            opcion_d: pregunta.opcion_d,
+            respuesta_correcta: pregunta.respuesta_correcta,
+            nivel_dificultad: pregunta.nivel_dificultad,
+            id_explicacion: pregunta.id_explicacion || null,
+            url_imagen: pregunta.url_imagen || null
+        });
+    }
 
+    async obtenerTodas() {
+        return await Pregunta.findAll({ include: INCLUDES_COMPLETOS });
+    }
 
-async eliminar(id) {
+    async obtenerPorArea(id_area) {
+        return await Pregunta.findAll({
+            where: { id_area },
+            include: INCLUDES_COMPLETOS
+        });
+    }
 
-    const sql = `
-        DELETE FROM preguntas
-        WHERE id_pregunta = ?
-    `;
+    async obtenerPorId(id_pregunta) {
+        return await Pregunta.findByPk(id_pregunta, { include: INCLUDES_COMPLETOS });
+    }
 
-    const resultado =
-        await this.db.ejecutar(sql, [id]);
+    async actualizar(id_pregunta, datos) {
+        const [filasActualizadas] = await Pregunta.update(datos, {
+            where: { id_pregunta }
+        });
 
-    return resultado.affectedRows > 0;
-}
-async obtenerAleatoriasPorArea(idArea, cantidad) {
+        if (filasActualizadas === 0) return null;
 
-    // OJO: a propósito NO incluye respuesta_correcta.
-    // Este método es para que el estudiante reciba
-    // las preguntas del simulacro, no para revelar la respuesta.
-    const sql = `
-        SELECT
-            p.id_pregunta,
-            p.id_area,
-            p.id_contexto,
-            p.enunciado,
-            p.opcion_a,
-            p.opcion_b,
-            p.opcion_c,
-            p.opcion_d,
-            p.nivel_dificultad,
-            p.url_imagen
-        FROM preguntas p
-        WHERE p.id_area = ?
-        ORDER BY RAND()
-        LIMIT ?
-    `;
+        return await this.obtenerPorId(id_pregunta);
+    }
 
-    return await this.db.ejecutar(sql, [idArea, cantidad]);
-}
+    async eliminar(id_pregunta) {
+        const filasEliminadas = await Pregunta.destroy({ where: { id_pregunta } });
+        return filasEliminadas > 0;
+    }
 
 }
 

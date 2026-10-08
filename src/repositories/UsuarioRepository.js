@@ -1,106 +1,50 @@
+const { Usuario } = require("../models");
+
 class UsuarioRepository {
 
-    constructor(db) {
-        this.db = db;
-    }
-
     async obtenerTodos() {
-        const sql = `
-            SELECT 
-                id_usuario,
-                nombre,
-                correo,
-                fecha_registro,
-                id_rol
-            FROM usuarios
-        `;
-
-        return await this.db.ejecutar(sql);
+        return await Usuario.findAll({
+            attributes: ["id_usuario", "nombre", "correo", "fecha_registro", "id_rol"]
+        });
     }
 
     async obtenerPorId(id_usuario) {
-        const sql = `
-            SELECT 
-                id_usuario,
-                nombre,
-                correo,
-                fecha_registro,
-                id_rol
-            FROM usuarios
-            WHERE id_usuario = ?
-        `;
-
-        const resultados = await this.db.ejecutar(sql, [id_usuario]);
-
-        return resultados.length > 0 ? resultados[0] : null;
+        return await Usuario.findByPk(id_usuario, {
+            attributes: ["id_usuario", "nombre", "correo", "fecha_registro", "id_rol"]
+        });
     }
 
     async obtenerPorCorreo(correo) {
-        const sql = `
-            SELECT *
-            FROM usuarios
-            WHERE correo = ?
-        `;
-
-        const resultados = await this.db.ejecutar(sql, [correo]);
-
-        return resultados.length > 0 ? resultados[0] : null;
+        return await Usuario.findOne({ where: { correo } });
     }
 
     async crear(usuario) {
-        const sql = `
-            INSERT INTO usuarios
-            (nombre, correo, password, fecha_registro, id_rol)
-            VALUES (?, ?, ?, NOW(), ?)
-        `;
-
-        const resultado = await this.db.ejecutar(sql, [
-            usuario.nombre,
-            usuario.correo,
-            usuario.password,
-            usuario.id_rol
-        ]);
-
-       return {
-    id_usuario: resultado.insertId,
-    nombre: usuario.nombre,
-    correo: usuario.correo,
-    id_rol: usuario.id_rol
-};
+        return await Usuario.create({
+            nombre: usuario.nombre,
+            correo: usuario.correo,
+            password: usuario.password,
+            id_rol: usuario.id_rol
+        });
     }
 
     async actualizar(id_usuario, usuario) {
-        const sql = `
-            UPDATE usuarios
-            SET nombre = ?,
-                correo = ?,
-                id_rol = ?
-            WHERE id_usuario = ?
-        `;
+        const [filasActualizadas] = await Usuario.update(
+            {
+                nombre: usuario.nombre,
+                correo: usuario.correo,
+                id_rol: usuario.id_rol
+            },
+            { where: { id_usuario } }
+        );
 
-        const resultado = await this.db.ejecutar(sql, [
-            usuario.nombre,
-            usuario.correo,
-            usuario.id_rol,
-            id_usuario
-        ]);
-
-        if (resultado.affectedRows === 0) {
-            return null;
-        }
+        if (filasActualizadas === 0) return null;
 
         return await this.obtenerPorId(id_usuario);
     }
 
     async eliminar(id_usuario) {
-        const sql = `
-            DELETE FROM usuarios
-            WHERE id_usuario = ?
-        `;
-
-        const resultado = await this.db.ejecutar(sql, [id_usuario]);
-
-        return resultado.affectedRows > 0;
+        const filasEliminadas = await Usuario.destroy({ where: { id_usuario } });
+        return filasEliminadas > 0;
     }
 
 }

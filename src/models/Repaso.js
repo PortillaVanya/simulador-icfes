@@ -1,19 +1,28 @@
-class Repaso {
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/sequelize");
 
-    constructor({
-        id_repaso = null,
-        id_pregunta,
-        id_usuario,
-        fecha_agregado = null,
-        prioridad = "media"
-    }) {
-        this.id_repaso = id_repaso;
-        this.id_pregunta = id_pregunta;
-        this.id_usuario = id_usuario;
-        this.fecha_agregado = fecha_agregado;
-        this.prioridad = prioridad;
+const Repaso = sequelize.define("Repaso", {
+    id_repaso: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    id_pregunta: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    fecha_agregado: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW
+    },
+    prioridad: DataTypes.STRING(50),
+    id_usuario: {
+        type: DataTypes.INTEGER,
+        allowNull: false
     }
-
-}
+}, {
+    tableName: "repaso",
+    timestamps: false
+});
 
 module.exports = Repaso;
