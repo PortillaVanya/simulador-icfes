@@ -1,27 +1,21 @@
-class Area {
-    constructor({ id_area, nombre_area, descripcion }) {
-        this.id_area = id_area;
-        this.nombre_area = nombre_area;
-        this.descripcion = descripcion;
-    }
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/sequelize");
 
-    validar() {
-        const errores = [];
-
-        if (this.id_area === undefined || this.id_area === null) {
-            errores.push("El id_area es obligatorio.");
-        }
-
-        if (!this.nombre_area || this.nombre_area.trim() === "") {
-            errores.push("El nombre del área es obligatorio.");
-        }
-
-        if (this.nombre_area && this.nombre_area.length > 50) {
-            errores.push("El nombre del área no puede superar los 50 caracteres.");
-        }
-
-        return errores;
-    }
-}
+const Area = sequelize.define("Area", {
+    id_area: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    nombre_area: {
+        type: DataTypes.STRING(50),
+        allowNull: false,
+        unique: true
+    },
+    descripcion: DataTypes.TEXT
+}, {
+    tableName: "areas",
+    timestamps: false
+});
 
 module.exports = Area;

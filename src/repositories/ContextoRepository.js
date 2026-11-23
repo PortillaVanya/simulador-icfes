@@ -1,119 +1,42 @@
+const { Contexto } = require("../models");
+
 class ContextoRepository {
 
-
-constructor(db) {
-    this.db = db;
-}
-
-
-async obtenerTodos() {
-
-    const sql = `
-        SELECT
-            id_contexto,
-            titulo,
-            contenido,
-            url_imagen
-        FROM contextos
-        ORDER BY id_contexto DESC
-    `;
-
-    return await this.db.ejecutar(sql);
-}
-
-
-async obtenerPorId(id) {
-
-    const sql = `
-        SELECT
-            id_contexto,
-            titulo,
-            contenido,
-            url_imagen
-        FROM contextos
-        WHERE id_contexto = ?
-    `;
-
-    const resultados = await this.db.ejecutar(sql, [id]);
-
-    return resultados.length > 0
-        ? resultados[0]
-        : null;
-}
-
-
-async crear(contexto) {
-
-    const sql = `
-        INSERT INTO contextos (
-            titulo,
-            contenido,
-            url_imagen
-        )
-        VALUES (?, ?, ?)
-    `;
-
-    const parametros = [
-        contexto.titulo,
-        contexto.contenido,
-        contexto.url_imagen
-    ];
-
-    const resultado =
-        await this.db.ejecutar(sql, parametros);
-
-    return {
-        id_contexto: resultado.insertId,
-        ...contexto
-    };
-}
-
-
-async actualizar(id, contexto) {
-
-    const sql = `
-        UPDATE contextos
-        SET
-            titulo = ?,
-            contenido = ?,
-            url_imagen = ?
-        WHERE id_contexto = ?
-    `;
-
-    const parametros = [
-        contexto.titulo,
-        contexto.contenido,
-        contexto.url_imagen,
-        id
-    ];
-
-    const resultado =
-        await this.db.ejecutar(sql, parametros);
-
-    if (resultado.affectedRows === 0) {
-        return null;
+    async crear(contexto) {
+        return await Contexto.create({
+            titulo: contexto.titulo,
+            contenido: contexto.contenido,
+            url_imagen: contexto.url_imagen || null
+        });
     }
 
-    return {
-        id_contexto: Number(id),
-        ...contexto
-    };
-}
+    async obtenerTodos() {
+        return await Contexto.findAll();
+    }
 
+    async obtenerPorId(id_contexto) {
+        return await Contexto.findByPk(id_contexto);
+    }
 
-async eliminar(id) {
+    async actualizar(id_contexto, contexto) {
+        const [filasActualizadas] = await Contexto.update(
+            {
+                titulo: contexto.titulo,
+                contenido: contexto.contenido,
+                url_imagen: contexto.url_imagen
+            },
+            { where: { id_contexto } }
+        );
 
-    const sql = `
-        DELETE FROM contextos
-        WHERE id_contexto = ?
-    `;
+        if (filasActualizadas === 0) return null;
 
-    const resultado =
-        await this.db.ejecutar(sql, [id]);
+        return await this.obtenerPorId(id_contexto);
+    }
 
-    return resultado.affectedRows > 0;
-}
-
+    async eliminar(id_contexto) {
+        const filasEliminadas = await Contexto.destroy({ where: { id_contexto } });
+        return filasEliminadas > 0;
+    }
 
 }
 

@@ -1,20 +1,21 @@
-class Contexto {
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/sequelize");
 
-
-constructor({
-    id_contexto = null,
-    titulo = null,
-    contenido,
-    url_imagen = null
-}) {
-
-    this.id_contexto = id_contexto;
-    this.titulo = titulo;
-    this.contenido = contenido;
-    this.url_imagen = url_imagen;
-}
-
-
-}
+const Contexto = sequelize.define("Contexto", {
+    id_contexto: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    titulo: DataTypes.STRING(150),
+    contenido: {
+        type: DataTypes.TEXT,
+        allowNull: false
+    },
+    url_imagen: DataTypes.STRING(255)
+}, {
+    tableName: "contextos",
+    timestamps: false
+});
 
 module.exports = Contexto;

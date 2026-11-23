@@ -3,7 +3,12 @@ class AreaService {
     constructor(areaRepository) {
         this.areaRepository = areaRepository;
     }
+async obtenerEstadisticas(id_area) {
+    const area = await this.areaRepository.obtenerPorId(id_area);
+    if (!area) return null;
 
+    return await this.areaRepository.obtenerEstadisticas(id_area);
+}
     async obtenerTodas() {
         return await this.areaRepository.obtenerTodas();
     }

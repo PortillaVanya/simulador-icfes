@@ -1,25 +1,35 @@
-class Evaluacion {
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/sequelize");
 
-    constructor({
-        id_evaluacion = null,
-        id_usuario,
-        id_area,
-        total_preguntas,
-        puntaje_obtenido = null,
-        estado = "en_curso",
-        fecha_inicio = null,
-        fecha_fin = null
-    }) {
-        this.id_evaluacion = id_evaluacion;
-        this.id_usuario = id_usuario;
-        this.id_area = id_area;
-        this.total_preguntas = total_preguntas;
-        this.puntaje_obtenido = puntaje_obtenido;
-        this.estado = estado;
-        this.fecha_inicio = fecha_inicio;
-        this.fecha_fin = fecha_fin;
+const Evaluacion = sequelize.define("Evaluacion", {
+    id_evaluacion: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    id_usuario: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    id_area: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    fecha: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW
+    },
+    puntaje_obtenido: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0
+    },
+    total_preguntas: {
+        type: DataTypes.INTEGER,
+        allowNull: false
     }
-
-}
+}, {
+    tableName: "evaluacion",
+    timestamps: false
+});
 
 module.exports = Evaluacion;

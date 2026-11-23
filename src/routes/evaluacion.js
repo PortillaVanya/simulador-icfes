@@ -1,23 +1,19 @@
 const express = require("express");
 
-const EvaluacionRepository = require("../repositories/EvaluacionRepository");
-const EvaluacionService = require("../services/EvaluacionService");
-const EvaluacionController = require("../controllers/EvaluacionController");
+const ExplicacionRepository = require("../repositories/ExplicacionRepository");
+const ExplicacionService = require("../services/ExplicacionService");
+const ExplicacionController = require("../controllers/ExplicacionController");
 
-module.exports = (db) => {
-
+module.exports = () => {
     const router = express.Router();
 
-    const evaluacionRepository = new EvaluacionRepository(db);
-    const evaluacionService = new EvaluacionService(evaluacionRepository);
-    const evaluacionController = new EvaluacionController(evaluacionService);
+    const explicacionRepository = new ExplicacionRepository();
+    const explicacionService = new ExplicacionService(explicacionRepository);
+    const explicacionController = new ExplicacionController(explicacionService);
 
-    router.post("/", evaluacionController.iniciar);
-    router.get("/usuario/:idUsuario", evaluacionController.obtenerHistorial);
-    router.get("/:id", evaluacionController.obtenerPorId);
-    router.post("/:id/respuestas", evaluacionController.registrarRespuesta);
-    router.put("/:id/finalizar", evaluacionController.finalizar);
+    router.post("/", explicacionController.crear);
+    router.get("/:id", explicacionController.obtenerPorId);
+    router.put("/:id", explicacionController.actualizar);
 
     return router;
-
 };

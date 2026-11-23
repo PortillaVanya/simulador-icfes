@@ -1,14 +1,36 @@
-class Usuario {
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/sequelize");
 
-    constructor(id_usuario, nombre, correo, password, fecha_registro, id_rol) {
-        this.id_usuario = id_usuario;
-        this.nombre = nombre;
-        this.correo = correo;
-        this.password = password;
-        this.fecha_registro = fecha_registro;
-        this.id_rol = id_rol;
+const Usuario = sequelize.define("Usuario", {
+    id_usuario: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    nombre: {
+        type: DataTypes.STRING(100),
+        allowNull: false
+    },
+    correo: {
+        type: DataTypes.STRING(100),
+        allowNull: false,
+        unique: true
+    },
+    password: {
+        type: DataTypes.STRING(255),
+        allowNull: false
+    },
+    fecha_registro: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW
+    },
+    id_rol: {
+        type: DataTypes.INTEGER,
+        allowNull: false
     }
-
-}
+}, {
+    tableName: "usuarios",
+    timestamps: false
+});
 
 module.exports = Usuario;

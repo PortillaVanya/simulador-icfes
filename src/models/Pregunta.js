@@ -1,39 +1,38 @@
-class Pregunta {
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/sequelize");
 
-constructor({
-    id_pregunta = null,
-    id_area,
-    id_contexto = null,
-    enunciado,
-    opcion_a,
-    opcion_b,
-    opcion_c,
-    opcion_d,
-    respuesta_correcta,
-    nivel_dificultad,
-    id_explicacion = null,
-    url_imagen = null
-}) {
-
-    this.id_pregunta = id_pregunta;
-    this.id_area = id_area;
-    this.id_contexto = id_contexto;
-
-    this.enunciado = enunciado;
-
-    this.opcion_a = opcion_a;
-    this.opcion_b = opcion_b;
-    this.opcion_c = opcion_c;
-    this.opcion_d = opcion_d;
-
-    this.respuesta_correcta = respuesta_correcta;
-    this.nivel_dificultad = nivel_dificultad;
-
-    this.id_explicacion = id_explicacion;
-    this.url_imagen = url_imagen;
-}
-
-
-}
+const Pregunta = sequelize.define("Pregunta", {
+    id_pregunta: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    id_area: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    id_contexto: DataTypes.INTEGER,
+    enunciado: {
+        type: DataTypes.TEXT,
+        allowNull: false
+    },
+    opcion_a: { type: DataTypes.STRING(255), allowNull: false },
+    opcion_b: { type: DataTypes.STRING(255), allowNull: false },
+    opcion_c: { type: DataTypes.STRING(255), allowNull: false },
+    opcion_d: { type: DataTypes.STRING(255), allowNull: false },
+    respuesta_correcta: {
+        type: DataTypes.CHAR(1),
+        allowNull: false
+    },
+    nivel_dificultad: {
+        type: DataTypes.ENUM("FACIL", "MEDIA", "DIFICIL"),
+        allowNull: false
+    },
+    id_explicacion: DataTypes.INTEGER,
+    url_imagen: DataTypes.STRING(255)
+}, {
+    tableName: "preguntas",
+    timestamps: false
+});
 
 module.exports = Pregunta;
