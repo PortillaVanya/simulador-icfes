@@ -25,4 +25,10 @@ const Repaso = sequelize.define("Repaso", {
     timestamps: false
 });
 
+Repaso.associate = (models) => {
+    Repaso.belongsTo(models.Usuario, { foreignKey: "id_usuario", onDelete: "CASCADE" });
+    Repaso.belongsTo(models.Pregunta, { foreignKey: "id_pregunta", onDelete: "CASCADE" });
+};
+
+
 module.exports = Repaso;

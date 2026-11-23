@@ -17,12 +17,19 @@ const DetalleEvaluacion = sequelize.define("DetalleEvaluacion", {
     },
     tiempo_usado: DataTypes.TIME,
     respuesta_marcada: DataTypes.CHAR(1),
-    es_correcta: DataTypes.BOOLEAN,
-    reportes: DataTypes.STRING(255),
-    historial: DataTypes.STRING(255)
+    es_correcta: DataTypes.BOOLEAN
 }, {
     tableName: "detalle_evaluacion",
-    timestamps: false
+    timestamps: false,
+    indexes: [
+        { unique: true, fields: ["id_evaluacion", "id_pregunta"] }
+    ]
 });
+
+DetalleEvaluacion.associate = (models) => {
+    DetalleEvaluacion.belongsTo(models.Evaluacion, { foreignKey: "id_evaluacion", onDelete: "CASCADE" });
+    DetalleEvaluacion.belongsTo(models.Pregunta, { foreignKey: "id_pregunta" });
+};
+
 
 module.exports = DetalleEvaluacion;

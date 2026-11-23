@@ -1,4 +1,5 @@
 const express = require("express");
+const { autenticar, permitirRoles, propietarioOAdmin } = require("../middlewares/auth");
 
 const RepasoRepository = require("../repositories/RepasoRepository");
 const RepasoService = require("../services/RepasoService");
@@ -11,9 +12,9 @@ module.exports = () => {
     const repasoService = new RepasoService(repasoRepository);
     const repasoController = new RepasoController(repasoService);
 
-    router.post("/", repasoController.agregar);
-    router.get("/usuario/:idUsuario", repasoController.obtenerPorUsuario);
-    router.delete("/:id", repasoController.eliminar);
+    router.post("/", autenticar, permitirRoles("estudiante", "admin"), repasoController.agregar);
+    router.get("/usuario/:idUsuario", autenticar, propietarioOAdmin("idUsuario"), repasoController.obtenerPorUsuario);
+    router.delete("/:id", autenticar, permitirRoles("estudiante", "admin"), repasoController.eliminar);
 
     return router;
 };

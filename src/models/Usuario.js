@@ -33,4 +33,14 @@ const Usuario = sequelize.define("Usuario", {
     timestamps: false
 });
 
+Usuario.associate = (models) => {
+    Usuario.belongsTo(models.Rol, { foreignKey: "id_rol" });
+    Usuario.hasOne(models.Perfil, { foreignKey: "id_usuario", onDelete: "CASCADE" });
+    Usuario.hasMany(models.Evaluacion, { foreignKey: "id_usuario", onDelete: "CASCADE" });
+    Usuario.hasMany(models.PlantillaEvaluacion, { foreignKey: "id_creador", as: "PlantillasCreadas" });
+    Usuario.hasMany(models.Repaso, { foreignKey: "id_usuario", onDelete: "CASCADE" });
+    Usuario.hasMany(models.Ranking, { foreignKey: "id_usuario", onDelete: "CASCADE" });
+};
+
+
 module.exports = Usuario;

@@ -29,4 +29,9 @@ const Ranking = sequelize.define("Ranking", {
     timestamps: false
 });
 
+Ranking.associate = (models) => {
+    Ranking.belongsTo(models.Usuario, { foreignKey: "id_usuario", onDelete: "CASCADE" });
+    Ranking.belongsTo(models.Area, { foreignKey: "id_area" });
+};
+
 module.exports = Ranking;

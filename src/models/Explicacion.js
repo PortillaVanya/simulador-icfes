@@ -17,4 +17,9 @@ const Explicacion = sequelize.define("Explicacion", {
     timestamps: false
 });
 
+Explicacion.associate = (models) => {
+    Explicacion.hasOne(models.Pregunta, { foreignKey: "id_explicacion", onDelete: "SET NULL" });
+};
+
+
 module.exports = Explicacion;

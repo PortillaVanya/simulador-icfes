@@ -43,14 +43,14 @@ class UsuarioService {
 
         return await this.usuarioRepository.crear({
             nombre: nombre.trim(),
-            correo: correo.trim(),
+            correo: correo.trim().toLowerCase(),
             password: passwordEncriptado,
             id_rol: id_rol || 2
         });
     }
 
     async login(correo, password) {
-        const usuario = await this.usuarioRepository.obtenerPorCorreo(correo);
+        const usuario = await this.usuarioRepository.obtenerPorCorreo(String(correo || "").trim().toLowerCase());
         if (!usuario) {
             throw new Error("Credenciales inválidas");
         }
@@ -62,6 +62,8 @@ class UsuarioService {
 
         const usuarioSinPassword = usuario.toJSON();
         delete usuarioSinPassword.password;
+        usuarioSinPassword.rol = usuario.Rol ? usuario.Rol.nombre_rol : ({ 1: "admin", 2: "estudiante", 3: "gestor" }[usuarioSinPassword.id_rol] || "estudiante");
+        delete usuarioSinPassword.Rol;
         return usuarioSinPassword;
     }
 
@@ -83,7 +85,7 @@ class UsuarioService {
 
         return await this.usuarioRepository.actualizar(id_usuario, {
             nombre: nombre.trim(),
-            correo: correo.trim(),
+            correo: correo.trim().toLowerCase(),
             id_rol: id_rol || usuarioExistente.id_rol
         });
     }

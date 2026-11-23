@@ -1,4 +1,4 @@
-const { Evaluacion, DetalleEvaluacion, Pregunta, Area, sequelize } = require("../models");
+const { Evaluacion, DetalleEvaluacion, Pregunta, Area, PlantillaEvaluacion, sequelize } = require("../models");
 
 class EvaluacionRepository {
 
@@ -6,6 +6,7 @@ class EvaluacionRepository {
         const nueva = await Evaluacion.create({
             id_usuario: evaluacion.id_usuario,
             id_area: evaluacion.id_area,
+            id_plantilla_evaluacion: evaluacion.id_plantilla_evaluacion || null,
             total_preguntas: evaluacion.total_preguntas
         });
 
@@ -14,6 +15,12 @@ class EvaluacionRepository {
 
     async obtenerPorId(id_evaluacion) {
         return await Evaluacion.findByPk(id_evaluacion);
+    }
+
+    async obtenerPlantillaActiva(id_plantilla_evaluacion) {
+        return await PlantillaEvaluacion.findOne({
+            where: { id_plantilla_evaluacion, activa: true }
+        });
     }
 
     async obtenerHistorialPorUsuario(id_usuario) {
@@ -73,6 +80,13 @@ class EvaluacionRepository {
         });
 
         return existente !== null;
+    }
+
+    async obtenerPreguntaPorArea(id_pregunta, id_area) {
+        return await Pregunta.findOne({
+            where: { id_pregunta, id_area },
+            attributes: ["id_pregunta", "respuesta_correcta"]
+        });
     }
 
     async obtenerRespuestaCorrecta(id_pregunta) {

@@ -18,4 +18,12 @@ const Area = sequelize.define("Area", {
     timestamps: false
 });
 
+Area.associate = (models) => {
+    Area.hasMany(models.Pregunta, { foreignKey: "id_area" });
+    Area.hasMany(models.Evaluacion, { foreignKey: "id_area" });
+    Area.hasMany(models.PlantillaEvaluacion, { foreignKey: "id_area" });
+    Area.hasMany(models.Ranking, { foreignKey: "id_area" });
+};
+
+
 module.exports = Area;

@@ -22,8 +22,10 @@ class RepasoRepository {
         });
     }
 
-    async eliminar(id_repaso) {
-        const filasEliminadas = await Repaso.destroy({ where: { id_repaso } });
+    async eliminar(id_repaso, id_usuario = null) {
+        const where = { id_repaso };
+        if (id_usuario !== null) where.id_usuario = id_usuario;
+        const filasEliminadas = await Repaso.destroy({ where });
         return filasEliminadas > 0;
     }
 

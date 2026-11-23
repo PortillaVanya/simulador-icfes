@@ -1,4 +1,4 @@
-const { Usuario } = require("../models");
+const { Usuario, Rol } = require("../models");
 
 class UsuarioRepository {
 
@@ -15,7 +15,7 @@ class UsuarioRepository {
     }
 
     async obtenerPorCorreo(correo) {
-        return await Usuario.findOne({ where: { correo } });
+        return await Usuario.findOne({ where: { correo }, include: [{ model: Rol, attributes: ["nombre_rol"] }] });
     }
 
     async crear(usuario) {

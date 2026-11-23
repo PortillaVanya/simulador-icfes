@@ -11,7 +11,7 @@ const Pregunta = sequelize.define("Pregunta", {
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    id_contexto: DataTypes.INTEGER,
+    id_informacion_compartida: DataTypes.INTEGER,
     enunciado: {
         type: DataTypes.TEXT,
         allowNull: false
@@ -28,11 +28,24 @@ const Pregunta = sequelize.define("Pregunta", {
         type: DataTypes.ENUM("FACIL", "MEDIA", "DIFICIL"),
         allowNull: false
     },
-    id_explicacion: DataTypes.INTEGER,
+    id_explicacion: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        unique: true
+    },
     url_imagen: DataTypes.STRING(255)
 }, {
     tableName: "preguntas",
     timestamps: false
 });
+
+Pregunta.associate = (models) => {
+    Pregunta.belongsTo(models.Area, { foreignKey: "id_area" });
+    Pregunta.belongsTo(models.InformacionCompartida, { foreignKey: "id_informacion_compartida", onDelete: "SET NULL" });
+    Pregunta.belongsTo(models.Explicacion, { foreignKey: "id_explicacion", onDelete: "SET NULL" });
+    Pregunta.hasMany(models.Repaso, { foreignKey: "id_pregunta", onDelete: "CASCADE" });
+    Pregunta.hasMany(models.DetalleEvaluacion, { foreignKey: "id_pregunta" });
+};
+
 
 module.exports = Pregunta;

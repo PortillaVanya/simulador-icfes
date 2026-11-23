@@ -6,7 +6,8 @@ class RepasoController {
 
     agregar = async (req, res) => {
         try {
-            const repaso = await this.repasoService.agregar(req.body);
+            const datos = { ...req.body, id_usuario: req.usuario.id_usuario };
+            const repaso = await this.repasoService.agregar(datos);
 
             return res.status(201).json({
                 mensaje: "Pregunta agregada a repaso correctamente",
@@ -35,7 +36,10 @@ class RepasoController {
 
     eliminar = async (req, res) => {
         try {
-            const eliminado = await this.repasoService.eliminar(req.params.id);
+            const eliminado = await this.repasoService.eliminar(
+                req.params.id,
+                req.usuario.rol === "admin" ? null : req.usuario.id_usuario
+            );
 
             if (!eliminado) {
                 return res.status(404).json({ mensaje: "Registro de repaso no encontrado" });

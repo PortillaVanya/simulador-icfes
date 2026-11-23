@@ -1,4 +1,5 @@
 const express = require("express");
+const { autenticar, permitirRoles } = require("../middlewares/auth");
 
 const AreaRepository = require("../repositories/AreaRepository");
 const AreaService = require("../services/AreaService");
@@ -14,9 +15,9 @@ module.exports = () => {
     router.get("/", areaController.obtenerTodas);
     router.get("/:id/estadisticas", areaController.obtenerEstadisticas);
     router.get("/:id", areaController.obtenerPorId);
-    router.post("/", areaController.crear);
-    router.put("/:id", areaController.actualizar);
-    router.delete("/:id", areaController.eliminar);
+    router.post("/", autenticar, permitirRoles("admin", "gestor"), areaController.crear);
+    router.put("/:id", autenticar, permitirRoles("admin", "gestor"), areaController.actualizar);
+    router.delete("/:id", autenticar, permitirRoles("admin", "gestor"), areaController.eliminar);
 
     return router;
 };

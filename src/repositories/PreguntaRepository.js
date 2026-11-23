@@ -1,8 +1,8 @@
-const { Pregunta, Area, Contexto, Explicacion, sequelize } = require("../models");
+const { Pregunta, Area, InformacionCompartida, Explicacion, sequelize } = require("../models");
 
 const INCLUDES_COMPLETOS = [
     { model: Area, attributes: ["nombre_area"] },
-    { model: Contexto, attributes: ["titulo", "contenido"] },
+    { model: InformacionCompartida, attributes: ["titulo", "contenido"] },
     { model: Explicacion, attributes: ["texto_explicacion", "imagen_url"] }
 ];
 
@@ -14,7 +14,7 @@ class PreguntaRepository {
         return await Pregunta.findAll({
             where: { id_area: idArea },
             attributes: [
-                "id_pregunta", "id_area", "id_contexto", "enunciado",
+                "id_pregunta", "id_area", "id_informacion_compartida", "enunciado",
                 "opcion_a", "opcion_b", "opcion_c", "opcion_d",
                 "nivel_dificultad", "url_imagen"
             ],
@@ -26,7 +26,7 @@ class PreguntaRepository {
     async crear(pregunta) {
         return await Pregunta.create({
             id_area: pregunta.id_area,
-            id_contexto: pregunta.id_contexto || null,
+            id_informacion_compartida: pregunta.id_informacion_compartida || null,
             enunciado: pregunta.enunciado,
             opcion_a: pregunta.opcion_a,
             opcion_b: pregunta.opcion_b,

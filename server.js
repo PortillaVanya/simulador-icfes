@@ -7,12 +7,13 @@ const path = require("path");
 const { sequelize } = require("./src/models"); // carga TODOS los modelos y sus relaciones
 const {
     crearBaseDeDatos,
+    migrarNombresAnteriores,
     cargarDatosIniciales,
     crearObjetosSQL
 } = require("./src/config/inicializarBD");
 
 const rutasPreguntas = require("./src/routes/preguntas");
-const rutasContextos = require("./src/routes/contextos");
+const rutasInformacionCompartidas = require("./src/routes/informacion-compartida");
 const rutasUsuarios = require("./src/routes/usuarios");
 const rutasAreas = require("./src/routes/areas");
 const rutasEvaluacion = require("./src/routes/evaluacion");
@@ -27,7 +28,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api/preguntas", rutasPreguntas());
-app.use("/api/contextos", rutasContextos());
+app.use("/api/informacion-compartida", rutasInformacionCompartidas());
 app.use("/api", rutasUsuarios());
 app.use("/api/areas", rutasAreas());
 app.use("/api/evaluaciones", rutasEvaluacion());
@@ -41,10 +42,11 @@ async function iniciar() {
         await sequelize.authenticate();
         console.log("✅ Conectado a MySQL (vía Sequelize)");
 
-        await sequelize.sync({ alter: true });     // crea las 11 tablas
+        await migrarNombresAnteriores();
+        await sequelize.sync({ alter: true });     // crea/actualiza las tablas definidas en los modelos
         console.log("✅ Tablas sincronizadas desde los modelos");
 
-        await cargarDatosIniciales();              // roles admin/estudiante
+        await cargarDatosIniciales();              // roles admin, estudiante y gestor
         await crearObjetosSQL();                   // trigger, vista, función, procedimiento
         console.log("✅ Datos iniciales y objetos SQL listos");
 

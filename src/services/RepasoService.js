@@ -30,12 +30,12 @@ class RepasoService {
         return await this.repasoRepository.obtenerPorUsuario(id_usuario);
     }
 
-    async eliminar(id_repaso) {
+    async eliminar(id_repaso, id_usuario = null) {
         if (!id_repaso || isNaN(id_repaso)) {
             throw new Error("El ID del repaso no es válido");
         }
 
-        return await this.repasoRepository.eliminar(id_repaso);
+        return await this.repasoRepository.eliminar(id_repaso, id_usuario);
     }
 
 }

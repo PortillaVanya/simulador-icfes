@@ -43,7 +43,7 @@ async crear(datos) {
 
     const {
         id_area,
-        id_contexto,
+        id_informacion_compartida,
         enunciado,
         opcion_a,
         opcion_b,
@@ -130,9 +130,9 @@ async crear(datos) {
 
         id_area: Number(id_area),
 
-        id_contexto:
-            id_contexto
-                ? Number(id_contexto)
+        id_informacion_compartida:
+            id_informacion_compartida
+                ? Number(id_informacion_compartida)
                 : null,
 
         enunciado:

@@ -5,7 +5,7 @@ class EvaluacionService {
     }
 
     async iniciar(datos) {
-        const { id_usuario, id_area, total_preguntas } = datos;
+        const { id_usuario, id_area, total_preguntas, id_plantilla_evaluacion } = datos;
 
         if (!id_usuario || isNaN(id_usuario)) throw new Error("Debe indicar un usuario válido");
         if (!id_area || isNaN(id_area)) throw new Error("Debe indicar un área válida");
@@ -16,7 +16,22 @@ class EvaluacionService {
         return await this.evaluacionRepository.crear({
             id_usuario: Number(id_usuario),
             id_area: Number(id_area),
+            id_plantilla_evaluacion: id_plantilla_evaluacion ? Number(id_plantilla_evaluacion) : null,
             total_preguntas: Number(total_preguntas)
+        });
+    }
+
+    async iniciarDesdePlantilla(id_plantilla_evaluacion, id_usuario) {
+        if (!Number.isInteger(Number(id_plantilla_evaluacion)) || Number(id_plantilla_evaluacion) <= 0) {
+            throw new Error("Debe indicar una plantilla de evaluación válida");
+        }
+        const plantilla = await this.evaluacionRepository.obtenerPlantillaActiva(Number(id_plantilla_evaluacion));
+        if (!plantilla) throw new Error("La evaluación no existe o no está activa");
+        return this.iniciar({
+            id_usuario,
+            id_area: plantilla.id_area,
+            total_preguntas: plantilla.cantidad_preguntas,
+            id_plantilla_evaluacion: plantilla.id_plantilla_evaluacion
         });
     }
 
@@ -53,10 +68,15 @@ class EvaluacionService {
             throw new Error("La respuesta debe ser A, B, C o D");
         }
 
-        const respuestaCorrecta = await this.evaluacionRepository.obtenerRespuestaCorrecta(id_pregunta);
-        if (!respuestaCorrecta) throw new Error("La pregunta indicada no existe");
+        const pregunta = await this.evaluacionRepository.obtenerPreguntaPorArea(
+            Number(id_pregunta),
+            Number(evaluacion.id_area)
+        );
+        if (!pregunta) {
+            throw new Error("La pregunta no existe o no pertenece al área de esta evaluación");
+        }
 
-        const esCorrecta = respuesta === respuestaCorrecta;
+        const esCorrecta = respuesta === pregunta.respuesta_correcta;
 
         return await this.evaluacionRepository.registrarRespuesta({
             id_evaluacion: Number(id_evaluacion),

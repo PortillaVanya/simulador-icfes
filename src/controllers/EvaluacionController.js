@@ -4,6 +4,7 @@ class EvaluacionController {
         this.evaluacionService = evaluacionService;
 
         this.iniciar = this.iniciar.bind(this);
+        this.iniciarDesdePlantilla = this.iniciarDesdePlantilla.bind(this);
         this.obtenerPorId = this.obtenerPorId.bind(this);
         this.obtenerHistorial = this.obtenerHistorial.bind(this);
         this.registrarRespuesta = this.registrarRespuesta.bind(this);
@@ -20,7 +21,7 @@ class EvaluacionController {
         try {
 
             const resultado =
-                await this.evaluacionService.iniciar(req.body);
+                await this.evaluacionService.iniciar({ ...req.body, id_usuario: req.usuario.id_usuario });
 
             return res.status(201).json({
                 mensaje: "Evaluación iniciada correctamente",
@@ -32,6 +33,22 @@ class EvaluacionController {
             return res.status(400).json({
                 error: error.message
             });
+        }
+    }
+
+    // Inicia un intento usando una plantilla creada por un gestor.
+    async iniciarDesdePlantilla(req, res) {
+        try {
+            const evaluacion = await this.evaluacionService.iniciarDesdePlantilla(
+                req.params.id,
+                req.usuario.id_usuario
+            );
+            return res.status(201).json({
+                mensaje: "Evaluación iniciada correctamente",
+                evaluacion
+            });
+        } catch (error) {
+            return res.status(400).json({ error: error.message });
         }
     }
 

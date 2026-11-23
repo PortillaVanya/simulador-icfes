@@ -1,8 +1,8 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/sequelize");
 
-const Contexto = sequelize.define("Contexto", {
-    id_contexto: {
+const InformacionCompartida = sequelize.define("InformacionCompartida", {
+    id_informacion_compartida: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true
@@ -14,8 +14,13 @@ const Contexto = sequelize.define("Contexto", {
     },
     url_imagen: DataTypes.STRING(255)
 }, {
-    tableName: "contextos",
+    tableName: "informacion_compartida",
     timestamps: false
 });
 
-module.exports = Contexto;
+InformacionCompartida.associate = (models) => {
+    InformacionCompartida.hasMany(models.Pregunta, { foreignKey: "id_informacion_compartida", onDelete: "SET NULL" });
+};
+
+
+module.exports = InformacionCompartida;

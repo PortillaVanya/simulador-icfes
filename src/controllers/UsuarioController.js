@@ -1,3 +1,5 @@
+const jwt = require("jsonwebtoken");
+
 class UsuarioController {
 
     login = async (req, res) => {
@@ -9,10 +11,12 @@ class UsuarioController {
             password
         );
 
-        res.status(200).json({
-            mensaje: "Login exitoso",
-            usuario
-        });
+        const token = jwt.sign(
+            { id_usuario: usuario.id_usuario, correo: usuario.correo, rol: usuario.rol },
+            process.env.JWT_SECRET,
+            { expiresIn: process.env.JWT_EXPIRES_IN || "2h" }
+        );
+        res.status(200).json({ mensaje: "Login exitoso", token, usuario });
     } catch (error) {
         console.error("Error en el login:", error);
 
@@ -60,6 +64,7 @@ class UsuarioController {
     crear = async (req, res) => {
         try {
             const usuario = await this.usuarioService.crear(req.body);
+            if (usuario && usuario.password) usuario.password = undefined;
 
             res.status(201).json({
                 mensaje: "Usuario creado correctamente",

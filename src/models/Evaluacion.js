@@ -15,6 +15,10 @@ const Evaluacion = sequelize.define("Evaluacion", {
         type: DataTypes.INTEGER,
         allowNull: false
     },
+    id_plantilla_evaluacion: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    },
     fecha: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW
@@ -31,5 +35,16 @@ const Evaluacion = sequelize.define("Evaluacion", {
     tableName: "evaluacion",
     timestamps: false
 });
+
+Evaluacion.associate = (models) => {
+    Evaluacion.belongsTo(models.Usuario, { foreignKey: "id_usuario", onDelete: "CASCADE" });
+    Evaluacion.belongsTo(models.Area, { foreignKey: "id_area" });
+    Evaluacion.belongsTo(models.PlantillaEvaluacion, {
+        foreignKey: "id_plantilla_evaluacion",
+        onDelete: "SET NULL"
+    });
+    Evaluacion.hasMany(models.DetalleEvaluacion, { foreignKey: "id_evaluacion", onDelete: "CASCADE" });
+};
+
 
 module.exports = Evaluacion;
