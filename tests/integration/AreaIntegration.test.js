@@ -11,6 +11,7 @@ describe('Prueba de Integración: API Áreas (Express Router -> Controller -> Se
     let areaControllerReal;
 
     beforeEach(() => {
+        jest.spyOn(console, 'error').mockImplementation(() => {});
         // Base de datos de pruebas en memoria para aislar sin depender de red ni MySQL
         baseDeDatosPruebas = [
             { id_area: 1, nombre_area: 'Matemáticas', descripcion: 'Álgebra y cálculo' },

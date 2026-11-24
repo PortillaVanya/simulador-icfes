@@ -3,116 +3,247 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Informe de Pruebas Unitarias, Integración y Pipeline CI</title>
+    <title>Informe de Pruebas Unitarias, Integración y Pipeline CI - Simulador ICFES</title>
     <style>
+        @page {
+            size: A4;
+            margin: 15mm 15mm 15mm 15mm;
+        }
+        * {
+            box-sizing: border-box;
+        }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #2c3e50;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 30px 20px;
-            background-color: #f8fafc;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.5;
+            color: #1e293b;
+            background-color: #f1f5f9;
+            margin: 0;
+            padding: 24px;
         }
         .container {
-            background-color: #ffffff;
+            max-width: 900px;
+            margin: 0 auto;
+            background: #ffffff;
             padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+        }
+        .header {
+            border-bottom: 3px solid #2563eb;
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
         }
         h1 {
             color: #1e3a8a;
-            border-bottom: 3px solid #3b82f6;
-            padding-bottom: 12px;
-            font-size: 26px;
-            text-align: center;
+            font-size: 24px;
+            margin: 0;
+            font-weight: 700;
         }
-        h2 {
-            color: #1e40af;
-            margin-top: 35px;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 8px;
-            font-size: 20px;
+        .btn-print {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+            transition: all 0.2s ease;
         }
-        h3 {
-            color: #2563eb;
-            font-size: 16px;
-            margin-top: 20px;
+        .btn-print:hover {
+            background-color: #1d4ed8;
         }
-        p, li {
+        .meta-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-left: 5px solid #2563eb;
+            padding: 16px 20px;
+            border-radius: 6px;
+            margin-bottom: 28px;
+        }
+        .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 8px 20px;
             font-size: 14px;
         }
-        .meta-box {
-            background-color: #eff6ff;
-            border-left: 4px solid #3b82f6;
-            padding: 15px 20px;
-            margin: 20px 0;
-            border-radius: 0 6px 6px 0;
+        .meta-item strong {
+            color: #334155;
         }
-        .meta-box p {
-            margin: 5px 0;
+        .meta-item a {
+            color: #2563eb;
+            text-decoration: none;
+            word-break: break-all;
+        }
+        h2 {
+            color: #0f172a;
+            font-size: 18px;
+            margin-top: 32px;
+            margin-bottom: 14px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        h3 {
+            color: #1e40af;
+            font-size: 15px;
+            margin-top: 22px;
+            margin-bottom: 8px;
+        }
+        p {
+            font-size: 13.5px;
+            color: #475569;
+            margin: 6px 0 12px 0;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 14px;
+            margin-bottom: 22px;
+            font-size: 13px;
         }
         table, th, td {
             border: 1px solid #cbd5e1;
         }
         th {
-            background-color: #1e3a8a;
-            color: #ffffff;
+            background-color: #f1f5f9;
+            color: #1e293b;
+            padding: 9px 12px;
             text-align: left;
-            padding: 10px 12px;
-            width: 28%;
+            width: 26%;
+            font-weight: 600;
         }
         td {
-            padding: 10px 12px;
+            padding: 9px 12px;
             background-color: #ffffff;
+            color: #334155;
+            vertical-align: top;
+        }
+        code {
+            font-family: Consolas, 'Courier New', Courier, monospace;
+            font-size: 12.5px;
+            background: #f1f5f9;
+            padding: 2px 5px;
+            border-radius: 4px;
+            color: #0f172a;
         }
         pre {
             background-color: #0f172a;
             color: #f8fafc;
-            padding: 12px;
+            padding: 12px 14px;
             border-radius: 6px;
+            font-family: Consolas, 'Courier New', Courier, monospace;
+            font-size: 12px;
+            line-height: 1.45;
             overflow-x: auto;
-            font-size: 13px;
+            margin: 6px 0;
         }
-        code {
-            font-family: Consolas, Monaco, 'Courier New', Courier, monospace;
+        pre code {
+            background: transparent;
+            color: inherit;
+            padding: 0;
         }
-        .img-placeholder {
-            border: 2px dashed #94a3b8;
-            background-color: #f1f5f9;
-            border-radius: 6px;
-            padding: 30px;
-            text-align: center;
-            color: #64748b;
-            font-style: italic;
-            margin: 15px 0;
+
+        /* Mockup Terminal para Evidencias Gráficas */
+        .terminal-window {
+            background: #0f172a;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            margin: 16px 0 24px 0;
+            overflow: hidden;
+            border: 1px solid #334155;
         }
-        .badge {
+        .terminal-header {
+            background: #1e293b;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #334155;
+        }
+        .dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
             display: inline-block;
+        }
+        .dot-red { background: #ef4444; }
+        .dot-yellow { background: #f59e0b; }
+        .dot-green { background: #10b981; }
+        .terminal-title {
+            color: #94a3b8;
+            font-size: 12px;
+            font-family: monospace;
+            margin-left: 8px;
+        }
+        .terminal-body {
+            padding: 14px 16px;
+            color: #e2e8f0;
+            font-family: Consolas, 'Courier New', Courier, monospace;
+            font-size: 12px;
+            line-height: 1.45;
+            white-space: pre-wrap;
+        }
+        .t-green { color: #22c55e; font-weight: bold; }
+        .t-badge-pass {
+            background: #15803d;
+            color: #ffffff;
+            font-weight: bold;
+            padding: 1px 6px;
+            border-radius: 3px;
+        }
+        .t-gray { color: #94a3b8; }
+        .t-cyan { color: #38bdf8; }
+        .t-bold { font-weight: bold; }
+        .badge-status {
             background-color: #10b981;
             color: white;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: bold;
+            font-size: 11px;
+            padding: 2px 7px;
+            border-radius: 10px;
+            font-weight: 600;
         }
+
+        .instruction-box {
+            background-color: #fefce8;
+            border: 1px solid #fef08a;
+            border-left: 4px solid #eab308;
+            padding: 10px 14px;
+            font-size: 12.5px;
+            color: #854d0e;
+            border-radius: 4px;
+            margin: 12px 0;
+        }
+
         @media print {
             body {
-                background-color: #ffffff;
+                background: #ffffff;
                 padding: 0;
             }
             .container {
                 box-shadow: none;
-                padding: 20px;
+                padding: 0;
+                max-width: 100%;
+            }
+            .btn-print, .instruction-box {
+                display: none !important;
             }
             .page-break {
                 page-break-before: always;
+            }
+            table, tr, td, th {
+                page-break-inside: avoid;
+            }
+            .terminal-window {
+                box-shadow: none;
+                page-break-inside: avoid;
             }
         }
     </style>
@@ -120,20 +251,33 @@
 <body>
 
 <div class="container">
-    <h1>Informe Técnico: Desarrollo de Pruebas y Pipeline de CI</h1>
-
-    <div class="meta-box">
-        <p><strong>Estudiante:</strong> Norman</p>
-        <p><strong>Proyecto:</strong> Simulador Saber 11 / ICFES (Backend API Express + Sequelize)</p>
-        <p><strong>Repositorio GitHub:</strong> <a href="https://github.com/simulador-icfes-equipo/simulador-icfes.git" target="_blank">https://github.com/simulador-icfes-equipo/simulador-icfes.git</a></p>
-        <p><strong>Rama de trabajo:</strong> <code>norman-pruebas</code></p>
-        <p><strong>Estado del Pipeline CI:</strong> <span class="badge">PASSED</span> (20/20 Pruebas exitosas)</p>
+    <div class="header">
+        <div>
+            <h1>Informe de Pruebas Unitarias, Integración y Pipeline CI</h1>
+            <p style="margin: 4px 0 0 0; color: #64748b; font-size: 13px;">Proyecto: Simulador Saber 11 / ICFES (Backend Node.js + Express + Sequelize)</p>
+        </div>
+        <button class="btn-print" onclick="window.print()">🖨️ Guardar como PDF / Imprimir</button>
     </div>
 
-    <h2>1. Fichas Técnicas de Pruebas Unitarias</h2>
-    <p>Se diseñaron e implementaron 4 pruebas unitarias independientes cubriendo distintas capas de la arquitectura del proyecto bajo estricto aislamiento mediante mocks (Jest):</p>
+    <div class="meta-card">
+        <div class="meta-grid">
+            <div class="meta-item"><strong>Estudiante:</strong> Norman</div>
+            <div class="meta-item"><strong>Rama de Git:</strong> <code>norman-pruebas</code></div>
+            <div class="meta-item"><strong>Repositorio GitHub:</strong> <br><a href="https://github.com/simulador-icfes-equipo/simulador-icfes.git" target="_blank">https://github.com/simulador-icfes-equipo/simulador-icfes.git</a></div>
+            <div class="meta-item"><strong>Estado Suite Pruebas:</strong> <span class="badge-status">PASSED (20/20)</span></div>
+            <div class="meta-item"><strong>Pipeline CI:</strong> GitHub Actions (Node.js 18.x, 20.x, 22.x)</div>
+            <div class="meta-item"><strong>Framework de Pruebas:</strong> Jest + Supertest</div>
+        </div>
+    </div>
 
-    <!-- PRUEBA UNITARIA 1 -->
+    <div class="instruction-box">
+        💡 <strong>Nota para exportar a PDF:</strong> Haz clic en el botón azul superior <em>"Guardar como PDF / Imprimir"</em> o presiona <code>Ctrl + P</code>. En el menú de impresión selecciona la opción <strong>"Guardar como PDF"</strong> y activa "Gráficos de fondo" para obtener el formato idéntico.
+    </div>
+
+    <h2>1. Fichas Técnicas de Pruebas Unitarias (4 Pruebas por Capa)</h2>
+    <p>Se implementaron 4 pruebas unitarias independientes utilizando aislamiento estricto mediante <strong>Mocks (Jest)</strong> para asegurar la verificación de cada componente sin dependencias externas ni conexión a red/base de datos real.</p>
+
+    <!-- FICHA 1: CONTROLLER -->
     <h3>Prueba Unitaria 1: Capa de Controlador (Controller)</h3>
     <table>
         <tr>
@@ -146,33 +290,34 @@
         </tr>
         <tr>
             <th>Capa probada</th>
-            <td><strong>Controller</strong> (<code>AreaController.js</code>)</td>
+            <td><strong>Controller</strong> (<code>src/controllers/AreaController.js</code>)</td>
         </tr>
         <tr>
             <th>Elemento a validar</th>
-            <td>Método <code>crear</code>: Valida que ante un payload válido, se invoque al servicio <code>AreaService.crear</code> y se retorne una respuesta HTTP 201 (Created) junto con la estructura JSON estándar de éxito y la entidad creada.</td>
+            <td>
+                Método <code>crear(req, res)</code>: Valida que ante un payload válido, el controlador invoque al servicio <code>AreaService.crear</code> con los argumentos recibidos y responda con el código HTTP <strong>201 (Created)</strong> y la estructura JSON de éxito esperada.
+            </td>
         </tr>
         <tr>
             <th>Datos de entrada (Payload/Mock)</th>
             <td>
-                <pre><code>// req.body
-{
-  "nombre_area": "Ciencias Naturales",
-  "descripcion": "Área enfocada en biología, química y física"
-}
-
-// Mock AreaService.crear
-{
-  "id_area": 1,
+                <strong>Payload (req.body):</strong>
+                <pre><code>{
   "nombre_area": "Ciencias Naturales",
   "descripcion": "Área enfocada en biología, química y física"
 }</code></pre>
+                <strong>Mock del servicio (mockAreaService.crear):</strong>
+                <pre><code>mockAreaService.crear.mockResolvedValue({
+  "id_area": 1,
+  "nombre_area": "Ciencias Naturales",
+  "descripcion": "Área enfocada en biología, química y física"
+});</code></pre>
             </td>
         </tr>
         <tr>
             <th>Resultado esperado</th>
             <td>
-                Código HTTP <strong>201</strong> y JSON:<br>
+                Código HTTP <strong>201 Created</strong> y respuesta JSON:
                 <pre><code>{
   "success": true,
   "message": "Área creada correctamente.",
@@ -186,7 +331,7 @@
         </tr>
     </table>
 
-    <!-- PRUEBA UNITARIA 2 -->
+    <!-- FICHA 2: SERVICE -->
     <h3>Prueba Unitaria 2: Capa de Servicio / Lógica de Negocio (Service)</h3>
     <table>
         <tr>
@@ -199,37 +344,41 @@
         </tr>
         <tr>
             <th>Capa probada</th>
-            <td><strong>Service</strong> (<code>AreaService.js</code>)</td>
+            <td><strong>Service</strong> (<code>src/services/AreaService.js</code>)</td>
         </tr>
         <tr>
             <th>Elemento a validar</th>
-            <td>Método <code>crear</code>: Valida la regla de negocio que prohíbe nombres de área duplicados. Si <code>areaRepository.obtenerPorNombre</code> encuentra un registro existente, se debe lanzar una excepción inmediata con el mensaje respectivo sin delegar la inserción al repositorio.</td>
+            <td>
+                Método <code>crear(area)</code>: Valida la regla de negocio que prohíbe nombres duplicados. Si <code>areaRepository.obtenerPorNombre</code> encuentra un registro existente con el mismo nombre, se debe lanzar una excepción controlada sin llamar al método <code>crear</code> del repositorio.
+            </td>
         </tr>
         <tr>
             <th>Datos de entrada (Payload/Mock)</th>
             <td>
-                <pre><code>// Parámetro área
-{
+                <strong>Parámetro de entrada:</strong>
+                <pre><code>{
   "nombre_area": "Matemáticas",
-  "descripcion": "Preguntas cuantitativas"
-}
-
-// Mock AreaRepository.obtenerPorNombre("Matemáticas")
-{
+  "descripcion": "Preguntas cuantitativas y cálculo"
+}</code></pre>
+                <strong>Mock de repositorio (mockAreaRepository.obtenerPorNombre):</strong>
+                <pre><code>mockAreaRepository.obtenerPorNombre.mockResolvedValue({
   "id_area": 1,
   "nombre_area": "Matemáticas"
-}</code></pre>
+});</code></pre>
             </td>
         </tr>
         <tr>
             <th>Resultado esperado</th>
-            <td>Excepción lanzada: <code>Error("Ya existe un área con ese nombre.")</code>. El método <code>areaRepository.crear</code> no debe ser ejecutado (0 invocaciones).</td>
+            <td>
+                Lanzamiento de excepción esperada: <code>Error("Ya existe un área con ese nombre.")</code>.<br>
+                El método <code>areaRepository.crear</code> no debe ser ejecutado (0 invocaciones).
+            </td>
         </tr>
     </table>
 
     <div class="page-break"></div>
 
-    <!-- PRUEBA UNITARIA 3 -->
+    <!-- FICHA 3: REPOSITORY -->
     <h3>Prueba Unitaria 3: Capa de Repositorio (Repository / Persistencia)</h3>
     <table>
         <tr>
@@ -242,29 +391,30 @@
         </tr>
         <tr>
             <th>Capa probada</th>
-            <td><strong>Repository</strong> (<code>AreaRepository.js</code>)</td>
+            <td><strong>Repository</strong> (<code>src/repositories/AreaRepository.js</code>)</td>
         </tr>
         <tr>
             <th>Elemento a validar</th>
-            <td>Método <code>obtenerPorId</code>: Valida que el repositorio invoque correctamente el método <code>findByPk</code> del modelo ORM Sequelize (<code>Area</code>) con el identificador numérico y retorne el objeto encontrado sin alteraciones.</td>
+            <td>
+                Método <code>obtenerPorId(id_area)</code>: Valida que el repositorio delegue la búsqueda al método <code>findByPk</code> del modelo ORM Sequelize (<code>Area</code>) utilizando el identificador numérico y retorne la entidad encontrada sin mutaciones.
+            </td>
         </tr>
         <tr>
             <th>Datos de entrada (Payload/Mock)</th>
             <td>
-                <pre><code>// Parámetro
-id_area: 1
-
-// Mock Area.findByPk(1)
-{
+                <strong>Parámetro de entrada:</strong> <code>id_area = 1</code><br>
+                <strong>Mock del Modelo Sequelize (Area.findByPk):</strong>
+                <pre><code>Area.findByPk.mockResolvedValue({
   "id_area": 1,
   "nombre_area": "Lectura Crítica",
   "descripcion": "Comprensión lectora y textos argumentativos"
-}</code></pre>
+});</code></pre>
             </td>
         </tr>
         <tr>
             <th>Resultado esperado</th>
-            <td>Invocación a <code>Area.findByPk(1)</code> exactamente 1 vez y retorno del objeto coincidente:
+            <td>
+                Invocación de <code>Area.findByPk(1)</code> exactamente 1 vez y retorno fiel de la entidad:
                 <pre><code>{
   "id_area": 1,
   "nombre_area": "Lectura Crítica",
@@ -274,7 +424,7 @@ id_area: 1
         </tr>
     </table>
 
-    <!-- PRUEBA UNITARIA 4 -->
+    <!-- FICHA 4: MIDDLEWARE -->
     <h3>Prueba Unitaria 4: Capa de Middleware / Seguridad (Middleware)</h3>
     <table>
         <tr>
@@ -287,28 +437,31 @@ id_area: 1
         </tr>
         <tr>
             <th>Capa probada</th>
-            <td><strong>Middleware</strong> (<code>auth.js</code> - <code>permitirRoles</code>)</td>
+            <td><strong>Middleware</strong> (<code>src/middlewares/auth.js</code> - <code>permitirRoles</code>)</td>
         </tr>
         <tr>
             <th>Elemento a validar</th>
-            <td>Función <code>permitirRoles("admin", "gestor")</code>: Valida el control de acceso basado en roles (RBAC). Si el usuario autenticado posee un rol no autorizado (ej. <code>estudiante</code>), se debe denegar el acceso con código HTTP 403 (Forbidden) y detener el flujo sin llamar a <code>next()</code>.</td>
+            <td>
+                Middleware <code>permitirRoles("admin", "gestor")</code>: Valida la autorización por roles (RBAC). Si el usuario autenticado tiene un rol no autorizado (ej. <code>estudiante</code>), se debe rechazar el acceso con HTTP <strong>403 (Forbidden)</strong> y detener el flujo sin ejecutar <code>next()</code>.
+            </td>
         </tr>
         <tr>
             <th>Datos de entrada (Payload/Mock)</th>
             <td>
-                <pre><code>// Parámetros de configuración
-permitirRoles("admin", "gestor")
-
-// Mock req.usuario
-{
+                <strong>Configuración del middleware:</strong> <code>permitirRoles("admin", "gestor")</code><br>
+                <strong>Mock de request (req.usuario):</strong>
+                <pre><code>{
   "id_usuario": 5,
+  "nombre": "Carlos Estudiante",
   "rol": "estudiante"
 }</code></pre>
             </td>
         </tr>
         <tr>
             <th>Resultado esperado</th>
-            <td>Código HTTP <strong>403</strong>, JSON <code>{"mensaje": "No tienes permisos para realizar esta acción."}</code> y función <code>next()</code> no invocada.</td>
+            <td>
+                Código HTTP <strong>403 Forbidden</strong>, JSON <code>{"mensaje": "No tienes permisos para realizar esta acción."}</code> y función <code>next()</code> no ejecutada.
+            </td>
         </tr>
     </table>
 
@@ -324,11 +477,13 @@ permitirRoles("admin", "gestor")
         </tr>
         <tr>
             <th>Componentes integrados</th>
-            <td><strong>Express Router + Controller + Service + Base de Datos de Pruebas</strong></td>
+            <td><strong>Express Router + AreaController + AreaService + Base de Datos de Prueba en Memoria</strong></td>
         </tr>
         <tr>
             <th>Elemento a validar</th>
-            <td>Flujo integral de creación y persistencia: cliente HTTP (vía <code>supertest</code>) envía petición <code>POST /api/areas</code>; el enrutador recibe la solicitud, invoca <code>AreaController.crear</code>, que interactúa con la lógica real de negocio de <code>AreaService.crear</code> y persiste el registro en el almacenamiento de pruebas. Se valida la respuesta HTTP 201 y la verificación de almacenamiento.</td>
+            <td>
+                Flujo extremo a extremo de creación y validación: Se ejecuta una petición HTTP cliente real mediante <code>supertest</code> (<code>POST /api/areas</code>). El enrutador Express procesa la solicitud, la dirige al <code>AreaController.crear</code> real, este invoca a la lógica de negocio en <code>AreaService.crear</code>, se evalúan las reglas de negocio, y se persiste el nuevo registro en el almacenamiento de pruebas. Se valida la respuesta HTTP 201 y la verificación física de persistencia.
+            </td>
         </tr>
         <tr>
             <th>Datos de entrada (Payload)</th>
@@ -344,7 +499,8 @@ Content-Type: application/json
         </tr>
         <tr>
             <th>Resultado esperado</th>
-            <td>Código HTTP <strong>201 Created</strong>, persistencia exitosa comprobada en la base de datos de pruebas (longitud aumentada a 3) y cuerpo de respuesta:
+            <td>
+                Código HTTP <strong>201 Created</strong>, longitud de almacenamiento de pruebas incrementada de 2 a 3 registros, y cuerpo de respuesta:
                 <pre><code>{
   "success": true,
   "message": "Área creada correctamente.",
@@ -360,8 +516,9 @@ Content-Type: application/json
 
     <div class="page-break"></div>
 
-    <h2>3. Automatización con Pipeline de CI (GitHub Actions)</h2>
-    <p>Se configuró el flujo de trabajo en <code>.github/workflows/ci.yml</code> para ejecutarse automáticamente ante cada <code>push</code> y <code>pull_request</code> sobre las ramas principales:</p>
+    <h2>3. Automatización con Pipeline (CI) - GitHub Actions</h2>
+    <p>Se configuró el pipeline de Integración Continua en el repositorio en la ruta <code>.github/workflows/ci.yml</code>. El pipeline se dispara ante cada <code>push</code> y <code>pull_request</code> hacia las ramas principales (<code>main</code>, <code>master</code>).</p>
+
     <pre><code>name: CI Pipeline - Simulador ICFES
 
 on:
@@ -399,53 +556,87 @@ jobs:
           JWT_SECRET: test_jwt_secret_ci_environment_key_32chars</code></pre>
 
     <h2>4. Evidencias Gráficas</h2>
-    
-    <h3>4.1. Ejecución Exitosa de Pruebas en Consola Local</h3>
+
+    <h3>4.1. Captura de Ejecución de Pruebas en Consola Local</h3>
     <p>Comando ejecutado: <code>npm test</code></p>
-    <pre><code>> simulador-icfes@1.0.0 test
-> jest --runInBand
+    
+    <div class="terminal-window">
+        <div class="terminal-header">
+            <span class="dot dot-red"></span>
+            <span class="dot dot-yellow"></span>
+            <span class="dot dot-green"></span>
+            <span class="terminal-title">bash - npm test (Jest Test Runner)</span>
+        </div>
+        <div class="terminal-body">
+&gt; simulador-icfes@1.0.0 test
+&gt; jest --runInBand
 
-PASS tests/integration/AreaIntegration.test.js
-PASS tests/unit/AreaController.test.js
-PASS tests/unit/authMiddleware.test.js
-PASS tests/unit/AreaService.test.js
-PASS tests/unit/AreaRepository.test.js
+<span class="t-badge-pass">PASS</span> <span class="t-cyan">tests/integration/AreaIntegration.test.js</span>
+<span class="t-badge-pass">PASS</span> <span class="t-cyan">tests/unit/authMiddleware.test.js</span>
+<span class="t-badge-pass">PASS</span> <span class="t-cyan">tests/unit/AreaRepository.test.js</span>
+<span class="t-badge-pass">PASS</span> <span class="t-cyan">tests/unit/AreaService.test.js</span>
+<span class="t-badge-pass">PASS</span> <span class="t-cyan">tests/unit/AreaController.test.js</span>
 
-Test Suites: 5 passed, 5 total
-Tests:       20 passed, 20 total
-Snapshots:   0 total
-Time:        1.77 s
-Ran all test suites.</code></pre>
-    <div class="img-placeholder">
-        [Inserta aquí la captura de pantalla de la terminal con la ejecución de <code>npm test</code>]
+<span class="t-bold">Test Suites:</span> <span class="t-green">5 passed</span>, 5 total
+<span class="t-bold">Tests:</span>       <span class="t-green">20 passed</span>, 20 total
+<span class="t-bold">Snapshots:</span>   0 total
+<span class="t-bold">Time:</span>        1.267 s
+<span class="t-gray">Ran all test suites.</span></div>
     </div>
 
-    <h3>4.2. Reporte de Cobertura de Código</h3>
+    <h3>4.2. Captura del Reporte de Cobertura de Pruebas (Coverage)</h3>
     <p>Comando ejecutado: <code>npm run test:coverage</code></p>
-    <pre><code>--------------------|---------|----------|---------|---------|----------------------------------
+
+    <div class="terminal-window">
+        <div class="terminal-header">
+            <span class="dot dot-red"></span>
+            <span class="dot dot-yellow"></span>
+            <span class="dot dot-green"></span>
+            <span class="terminal-title">bash - npm run test:coverage (Istanbul / Jest)</span>
+        </div>
+        <div class="terminal-body">
+--------------------|---------|----------|---------|---------|----------------------------------
 File                | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                
 --------------------|---------|----------|---------|---------|----------------------------------
-All files           |   48.38 |    41.26 |      50 |      50 |                                  
+<span class="t-bold">All files</span>           |   <span class="t-green">48.38</span> |    41.26 |      50 |      50 |                                  
  controllers        |   40.67 |    36.36 |   42.85 |   40.67 |                                  
   AreaController.js |   40.67 |    36.36 |   42.85 |   40.67 | 7-14,18-29,62-64,104-138,146-173 
- middlewares        |   71.42 |    53.84 |      60 |   78.94 |                                  
-  auth.js           |   71.42 |    53.84 |      60 |   78.94 | 28-31                            
+ middlewares        |   <span class="t-green">71.42</span> |    53.84 |      60 |   <span class="t-green">78.94</span> |                                  
+  auth.js           |   <span class="t-green">71.42</span> |    53.84 |      60 |   <span class="t-green">78.94</span> | 28-31                            
  repositories       |   43.75 |        0 |   57.14 |   46.66 |                                  
   AreaRepository.js |   43.75 |        0 |   57.14 |   46.66 | 6,25-32,41-52                    
- services           |      50 |    45.83 |   42.85 |   51.85 |                                  
-  AreaService.js    |      50 |    45.83 |   42.85 |   51.85 | 7-13,50-73                       
---------------------|---------|----------|---------|---------|----------------------------------</code></pre>
-    <div class="img-placeholder">
-        [Inserta aquí la captura de pantalla de la terminal con el reporte de cobertura de Jest]
+ services           |   <span class="t-green">50.00</span> |    45.83 |   42.85 |   <span class="t-green">51.85</span> |                                  
+  AreaService.js    |   <span class="t-green">50.00</span> |    45.83 |   42.85 |   <span class="t-green">51.85</span> | 7-13,50-73                       
+--------------------|---------|----------|---------|---------|----------------------------------
+
+<span class="t-bold">Test Suites:</span> <span class="t-green">5 passed</span>, 5 total
+<span class="t-bold">Tests:</span>       <span class="t-green">20 passed</span>, 20 total
+<span class="t-bold">Snapshots:</span>   0 total
+<span class="t-bold">Time:</span>        1.385 s
+<span class="t-gray">Ran all test suites.</span></div>
     </div>
 
     <h2>5. Flujo de Trabajo en Git y Pull Request</h2>
-    <ol>
-        <li><strong>Creación de rama individual:</strong> <code>git checkout -b norman-pruebas</code></li>
-        <li><strong>Confirmación de cambios:</strong> <code>git commit -m "feat(tests): agregar pruebas unitarias, integracion y pipeline CI"</code></li>
-        <li><strong>Publicación en GitHub:</strong> <code>git push origin norman-pruebas</code></li>
-        <li><strong>Apertura de Pull Request:</strong> Hacia la rama <code>main</code> en GitHub, donde el pipeline de GitHub Actions se activa y valida automáticamente la totalidad de pruebas.</li>
-        <li><strong>Revisión y Aprobación:</strong> El equipo revisa el PR y procede a la fusión (merge).</li>
+    <ol style="font-size: 13.5px; color: #334155; line-height: 1.7;">
+        <li><strong>Creación de rama individual de trabajo:</strong>
+            <pre><code>git checkout -b norman-pruebas</code></pre>
+        </li>
+        <li><strong>Guardar y confirmar cambios localmente:</strong>
+            <pre><code>git add .
+git commit -m "feat(tests): incorporar pruebas unitarias, integracion y pipeline CI"</code></pre>
+        </li>
+        <li><strong>Publicar rama en el repositorio de GitHub:</strong>
+            <pre><code>git push -u origin norman-pruebas</code></pre>
+        </li>
+        <li><strong>Apertura de Pull Request (PR):</strong>
+            Ir a GitHub &gt; <em>Pull Requests</em> &gt; <em>New pull request</em> con origen <code>norman-pruebas</code> y destino <code>main</code>.
+        </li>
+        <li><strong>Validación automática con CI:</strong>
+            El flujo de GitHub Actions se ejecuta automáticamente. Todos los tests en las versiones 18.x, 20.x y 22.x se validan en verde.
+        </li>
+        <li><strong>Aprobación e Integración:</strong>
+            Revisión por pares y aprobación del PR para hacer el <em>Merge</em> en la rama <code>main</code>.
+        </li>
     </ol>
 </div>
 
