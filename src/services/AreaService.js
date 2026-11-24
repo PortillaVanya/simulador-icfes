@@ -34,7 +34,9 @@ async obtenerEstadisticas(id_area) {
             );
         }
 
-        const existente = await this.areaRepository.obtenerPorNombre(nombre_area.trim());
+        const existente = await this.areaRepository.obtenerPorNombre(
+            nombre_area.trim()
+        );
 
         if (existente) {
             throw new Error("Ya existe un área con ese nombre.");
@@ -71,6 +73,10 @@ async obtenerEstadisticas(id_area) {
 
     async eliminar(id_area) {
         return await this.areaRepository.eliminar(id_area);
+    }
+
+    async obtenerEstadisticas() {
+        return await this.areaRepository.obtenerEstadisticas();
     }
 
 }
