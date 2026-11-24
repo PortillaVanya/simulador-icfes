@@ -10,8 +10,10 @@ describe('Prueba de Integración: API Áreas (Express Router -> Controller -> Se
     let areaServiceReal;
     let areaControllerReal;
 
+    let consoleErrorSpy;
+
     beforeEach(() => {
-        jest.spyOn(console, 'error').mockImplementation(() => {});
+        consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
         // Base de datos de pruebas en memoria para aislar sin depender de red ni MySQL
         baseDeDatosPruebas = [
             { id_area: 1, nombre_area: 'Matemáticas', descripcion: 'Álgebra y cálculo' },
@@ -48,6 +50,10 @@ describe('Prueba de Integración: API Áreas (Express Router -> Controller -> Se
         router.get('/', areaControllerReal.obtenerTodas);
 
         app.use('/api/areas', router);
+    });
+
+    afterEach(() => {
+        if (consoleErrorSpy) consoleErrorSpy.mockRestore();
     });
 
     test('Flujo de Integración: GET /api/areas/:id debe conectar Router -> Controller -> Service -> Repositorio y retornar 200 con el objeto', async () => {
