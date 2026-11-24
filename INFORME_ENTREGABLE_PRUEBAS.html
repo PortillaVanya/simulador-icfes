@@ -262,7 +262,7 @@
     <div class="meta-card">
         <div class="meta-grid">
             <div class="meta-item"><strong>Estudiante:</strong> Norman</div>
-            <div class="meta-item"><strong>Rama de Git:</strong> <code>norman-pruebas</code></div>
+            <div class="meta-item"><strong>Rama de Git:</strong> <code>Pruebas-Norman</code></div>
             <div class="meta-item"><strong>Repositorio GitHub:</strong> <br><a href="https://github.com/simulador-icfes-equipo/simulador-icfes.git" target="_blank">https://github.com/simulador-icfes-equipo/simulador-icfes.git</a></div>
             <div class="meta-item"><strong>Estado Suite Pruebas:</strong> <span class="badge-status">PASSED (20/20)</span></div>
             <div class="meta-item"><strong>Pipeline CI:</strong> GitHub Actions (Node.js 18.x, 20.x, 22.x)</div>
@@ -618,18 +618,16 @@ File                | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
 
     <h2>5. Flujo de Trabajo en Git y Pull Request</h2>
     <ol style="font-size: 13.5px; color: #334155; line-height: 1.7;">
-        <li><strong>Creación de rama individual de trabajo:</strong>
-            <pre><code>git checkout -b norman-pruebas</code></pre>
-        </li>
+        <li><strong>Creación de rama individual:</strong> <code>git checkout -b Pruebas-Norman</code></li>
         <li><strong>Guardar y confirmar cambios localmente:</strong>
             <pre><code>git add .
 git commit -m "feat(tests): incorporar pruebas unitarias, integracion y pipeline CI"</code></pre>
         </li>
         <li><strong>Publicar rama en el repositorio de GitHub:</strong>
-            <pre><code>git push -u origin norman-pruebas</code></pre>
+            <pre><code>git push -u origin Pruebas-Norman</code></pre>
         </li>
         <li><strong>Apertura de Pull Request (PR):</strong>
-            Ir a GitHub &gt; <em>Pull Requests</em> &gt; <em>New pull request</em> con origen <code>norman-pruebas</code> y destino <code>main</code>.
+            Ir a GitHub &gt; <em>Pull Requests</em> &gt; <em>New pull request</em> con origen <code>Pruebas-Norman</code> y destino <code>main</code>.
         </li>
         <li><strong>Validación automática con CI:</strong>
             El flujo de GitHub Actions se ejecuta automáticamente. Todos los tests en las versiones 18.x, 20.x y 22.x se validan en verde.

@@ -3,7 +3,7 @@
 **Estudiante:** Norman  
 **Proyecto:** Simulador Saber 11 / ICFES (Backend API Express + Sequelize)  
 **Repositorio GitHub:** [https://github.com/simulador-icfes-equipo/simulador-icfes.git](https://github.com/simulador-icfes-equipo/simulador-icfes.git)  
-**Rama de trabajo:** `norman-pruebas`  
+**Rama de trabajo:** `Pruebas-Norman`  
 **Estado de Pruebas:** 20/20 Exitosas (5 Test Suites)
 
 ---
@@ -132,7 +132,7 @@ All files           |   48.38 |    41.26 |      50 |      50 |
 
 1. **Crear rama individual de trabajo:**
    ```bash
-   git checkout -b norman-pruebas
+   git checkout -b Pruebas-Norman
    ```
 2. **Añadir archivos modificados y nuevos:**
    ```bash
@@ -144,11 +144,11 @@ All files           |   48.38 |    41.26 |      50 |      50 |
    ```
 4. **Subir rama a GitHub:**
    ```bash
-   git push -u origin norman-pruebas
+   git push -u origin Pruebas-Norman
    ```
 5. **Abrir Pull Request en GitHub:**
    - Navega al repositorio en GitHub.
-   - Selecciona `Compare & pull request` desde la rama `norman-pruebas` hacia `main`.
+   - Selecciona `Compare & pull request` desde la rama `Pruebas-Norman` hacia `main`.
    - Observa la ejecución automática del Action "CI Pipeline - Simulador ICFES" en la pestaña de verificaciones del PR.
 6. **Aprobación y Merge:**
    - Tras validar que el pipeline esté en verde, se aprueba el PR y se integra a la rama `main`.
